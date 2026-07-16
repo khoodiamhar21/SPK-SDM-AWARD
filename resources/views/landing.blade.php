@@ -38,15 +38,19 @@
     </header>
 
     <!-- Hero -->
-    <section class="relative overflow-hidden">
-        <!-- Banner foto kegiatan di belakang -->
+    @php $heroPhotos = [asset('img/1aa.jpg'), asset('img/2aa.jpg'), asset('img/5aa.jpg')]; @endphp
+    <section class="relative overflow-hidden" x-data="{ slide: 0, photos: {{ json_encode($heroPhotos) }} }" x-init="setInterval(() => slide = (slide + 1) % photos.length, 4000)">
+        <!-- Banner slideshow foto kegiatan -->
         <div class="absolute inset-0">
-            <img src="{{ asset('img/1aa.jpg') }}" class="h-full w-full object-cover" alt="Kegiatan prestasi siswa">
+            <template x-for="(p, i) in photos" :key="i">
+                <img :src="p" x-show="slide === i" x-transition.opacity.duration.1000ms
+                     class="absolute inset-0 h-full w-full object-cover" alt="Kegiatan prestasi siswa">
+            </template>
             <!-- gradasi ke kanan: kiri gelap (teks), kanan transparan (foto kelihatan) -->
             <div class="absolute inset-0 bg-gradient-to-r from-blue-950/85 via-blue-900/70 to-blue-900/10"></div>
         </div>
-        <div class="relative max-w-6xl mx-auto px-5 py-24 sm:py-32 grid sm:grid-cols-2 gap-12 items-center">
-            <div class="pop text-white">
+        <div class="relative max-w-6xl mx-auto px-5 py-24 sm:py-32">
+            <div class="pop text-white max-w-2xl">
                 <span class="inline-block px-3 py-1 rounded-full bg-white/15 text-blue-50 text-xs font-bold mb-5 backdrop-blur">Sistem Pendukung Keputusan</span>
                 <h1 class="text-4xl sm:text-5xl font-extrabold leading-tight drop-shadow">
                     Rayakan <span class="text-sky-300">Siswa Berprestasi</span> dengan Cara yang Adil & Transparan
@@ -57,26 +61,6 @@
                 <div class="mt-8 flex flex-wrap gap-3">
                     <a href="{{ route('login') }}" class="px-6 py-3 rounded-2xl bg-blue-600 text-white font-semibold hover:bg-blue-700 shadow-md transition-all">Masuk Sistem</a>
                     <a href="#alur" class="px-6 py-3 rounded-2xl border border-white/40 text-white font-semibold hover:bg-white/10 transition-all">Lihat Alur</a>
-                </div>
-            </div>
-            <div class="pop hidden sm:block" style="animation-delay:.15s">
-                <div class="bg-white/95 backdrop-blur rounded-3xl shadow-xl border border-white/40 p-6 floaty">
-                    <div class="text-sm text-slate-400 mb-1">Periode Aktif</div>
-                    <div class="text-lg font-bold text-slate-800 mb-4">{{ $periode->nama ?? '—' }}</div>
-                    <div class="space-y-3">
-                        @forelse($ranking as $i => $r)
-                            <div class="flex items-center gap-3">
-                                <span class="h-8 w-8 rounded-full bg-gradient-to-br from-blue-500 to-sky-400 text-white text-xs font-bold flex items-center justify-center shadow">{{ $i+1 }}</span>
-                                <div class="flex-1">
-                                    <div class="text-sm font-semibold text-slate-800">{{ $r['siswa']->nama }}</div>
-                                    <div class="text-xs text-slate-400">Kelas {{ $r['siswa']->kelas }}</div>
-                                </div>
-                                <span class="text-sm font-mono text-blue-600">{{ number_format($r['total_vi'], 4) }}</span>
-                            </div>
-                        @empty
-                            <div class="text-sm text-slate-400">Belum ada data peringkat.</div>
-                        @endforelse
-                    </div>
                 </div>
             </div>
         </div>
