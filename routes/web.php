@@ -12,6 +12,8 @@ use App\Http\Controllers\Panel\RubrikController;
 use App\Http\Controllers\Panel\ValidasiController;
 use App\Http\Controllers\Panel\PenilaianController;
 use App\Http\Controllers\Panel\RekapController;
+use App\Http\Controllers\Panel\PeriodeController;
+use App\Http\Controllers\Panel\KelasController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', [LandingController::class, 'index'])->name('landing');
@@ -84,6 +86,20 @@ Route::middleware('auth')->group(function () {
         Route::get('/panel/akun/{user}/edit', [UserController::class, 'edit'])->name('panel.akun.edit');
         Route::patch('/panel/akun/{user}', [UserController::class, 'update'])->name('panel.akun.update');
         Route::delete('/panel/akun/{user}', [UserController::class, 'destroy'])->name('panel.akun.destroy');
+
+        Route::get('/panel/periode', [PeriodeController::class, 'index'])->name('panel.periode.index');
+        Route::get('/panel/periode/create', [PeriodeController::class, 'create'])->name('panel.periode.create');
+        Route::post('/panel/periode', [PeriodeController::class, 'store'])->name('panel.periode.store');
+        Route::get('/panel/periode/{periode}/edit', [PeriodeController::class, 'edit'])->name('panel.periode.edit');
+        Route::put('/panel/periode/{periode}', [PeriodeController::class, 'update'])->name('panel.periode.update');
+        Route::delete('/panel/periode/{periode}', [PeriodeController::class, 'destroy'])->name('panel.periode.destroy');
+
+        Route::get('/panel/kelas', [KelasController::class, 'index'])->name('panel.kelas.index');
+        Route::get('/panel/kelas/create', [KelasController::class, 'create'])->name('panel.kelas.create');
+        Route::post('/panel/kelas', [KelasController::class, 'store'])->name('panel.kelas.store');
+        Route::get('/panel/kelas/{k}/edit', [KelasController::class, 'edit'])->name('panel.kelas.edit');
+        Route::put('/panel/kelas/{k}', [KelasController::class, 'update'])->name('panel.kelas.update');
+        Route::delete('/panel/kelas/{k}', [KelasController::class, 'destroy'])->name('panel.kelas.destroy');
     });
 
     Route::middleware('role:wakasiswa')->group(function () {
