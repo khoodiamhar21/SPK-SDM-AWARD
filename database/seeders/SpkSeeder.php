@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 use App\Models\Bobot;
+use App\Models\Kelas;
 use App\Models\Kriteria;
 use App\Models\Periode;
 use App\Models\Prestasi;
@@ -16,44 +17,63 @@ class SpkSeeder extends Seeder
 {
     public function run(): void
     {
-        // ===== AKUN PENGGUNA =====
-        $accounts = [
-            ['email' => 'panitia@sdmaward.test', 'name' => 'Panitia SDM Award', 'role' => 'panitia'],
-            ['email' => 'waka@sdmaward.test', 'name' => 'Waka Kesiswaan', 'role' => 'wakasiswa'],
-            ['email' => 'siswa@sdmaward.test', 'name' => 'Budi Santoso', 'role' => 'siswa', 'nis' => '2024001', 'kelas' => 'V'],
-            ['email' => 'siswa2@sdmaward.test', 'name' => 'Siti Aminah', 'role' => 'siswa', 'nis' => '2024002', 'kelas' => 'VI'],
-            ['email' => 'siswa3@sdmaward.test', 'name' => 'Rizki Pratama', 'role' => 'siswa', 'nis' => '2024003', 'kelas' => 'IV'],
-            ['email' => 'siswa4@sdmaward.test', 'name' => 'Nadia Lestari', 'role' => 'siswa', 'nis' => '2024004', 'kelas' => 'V'],
-            ['email' => 'siswa5@sdmaward.test', 'name' => 'Fajar Nugroho', 'role' => 'siswa', 'nis' => '2024005', 'kelas' => 'VI'],
-        ];
-
-        $siswaUsers = [];
-        foreach ($accounts as $a) {
-            $user = User::firstOrCreate(
-                ['email' => $a['email']],
-                ['name' => $a['name'], 'password' => Hash::make('password'), 'role' => $a['role']]
-            );
-            if ($a['role'] === 'siswa') {
-                Siswa::firstOrCreate(
-                    ['user_id' => $user->id],
-                    ['nis' => $a['nis'], 'nama' => $a['name'], 'kelas' => $a['kelas']]
-                );
-                $siswaUsers[$a['email']] = $user;
-            }
-        }
-
-        // Map siswa
-        $siswa = Siswa::where('nis', '2024001')->first();
-        $siswa2 = Siswa::where('nis', '2024002')->first();
-        $siswa3 = Siswa::where('nis', '2024003')->first();
-        $siswa4 = Siswa::where('nis', '2024004')->first();
-        $siswa5 = Siswa::where('nis', '2024005')->first();
-
         // ===== PERIODE =====
         $periode = Periode::firstOrCreate(
             ['tahun' => 2025],
             ['nama' => 'SDM Award 2025/2026', 'tgl_buka' => '2025-01-01', 'tgl_tutup' => '2025-12-31', 'aktif' => true]
         );
+
+        // ===== KELAS =====
+        $this->call(KelasSeeder::class);
+
+        // ===== AKUN PENGGUNA =====
+        $kelasI = Kelas::where('urutan', 1)->first();
+        $kelasII = Kelas::where('urutan', 2)->first();
+        $kelasIV = Kelas::where('urutan', 4)->first();
+        $kelasV = Kelas::where('urutan', 5)->first();
+        $kelasVI = Kelas::where('urutan', 6)->first();
+
+        $accounts = [
+            ['email' => 'panitia@sdmaward.test', 'name' => 'Panitia SDM Award', 'role' => 'panitia'],
+            ['email' => 'waka@sdmaward.test', 'name' => 'Waka Kesiswaan', 'role' => 'wakasiswa'],
+            ['nisn' => '2024001', 'name' => 'Budi Santoso', 'role' => 'siswa', 'kelas' => $kelasV->id],
+            ['nisn' => '2024002', 'name' => 'Siti Aminah', 'role' => 'siswa', 'kelas' => $kelasVI->id],
+            ['nisn' => '2024003', 'name' => 'Rizki Pratama', 'role' => 'siswa', 'kelas' => $kelasIV->id],
+            ['nisn' => '2024004', 'name' => 'Nadia Lestari', 'role' => 'siswa', 'kelas' => $kelasV->id],
+            ['nisn' => '2024005', 'name' => 'Fajar Nugroho', 'role' => 'siswa', 'kelas' => $kelasVI->id],
+        ];
+
+        $siswaUsers = [];
+        foreach ($accounts as $a) {
+            if ($a['role'] === 'siswa') {
+                $siswa = Siswa::firstOrCreate(
+                    ['nisn' => $a['nisn']],
+                    ['nama' => $a['name'], 'kelas_id' => $a['kelas']]
+                );
+                $user = User::firstOrCreate(
+                    ['nisn' => $a['nisn']],
+                    ['name' => $a['name'], 'email' => $a['nisn'].'@sdmaward.test', 'password' => Hash::make('password'), 'role' => 'siswa']
+                );
+                $siswa->update([
+                    'user_id' => $user->id,
+                    'waktu_registrasi_pertama' => now(),
+                    'periode_terakhir_ikuti' => $periode->id,
+                ]);
+                $siswaUsers[$a['nisn']] = $user;
+            } else {
+                User::firstOrCreate(
+                    ['email' => $a['email']],
+                    ['name' => $a['name'], 'password' => Hash::make('password'), 'role' => $a['role']]
+                );
+            }
+        }
+
+        // Map siswa
+        $siswa = Siswa::where('nisn', '2024001')->first();
+        $siswa2 = Siswa::where('nisn', '2024002')->first();
+        $siswa3 = Siswa::where('nisn', '2024003')->first();
+        $siswa4 = Siswa::where('nisn', '2024004')->first();
+        $siswa5 = Siswa::where('nisn', '2024005')->first();
 
         // ===== KRITERIA & BOBOT (SAW - tingkat kejuaraan) =====
         $c1 = Kriteria::firstOrCreate(['kode' => 'C1'], ['nama' => 'Tingkat Nasional', 'keterangan' => 'bobot 0.5']);
