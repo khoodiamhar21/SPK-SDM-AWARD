@@ -45,9 +45,17 @@
                         <span x-show="!collapsed" x-cloak>Status Seleksi</span>
                     </a>
                 @else
-                    <a href="{{ route('panel.siswa.index') }}" title="Daftar Siswa" class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-white/10 {{ request()->routeIs('panel.siswa.*') ? 'bg-white/15 font-semibold' : '' }}">
+                    <a href="{{ route('panel.periode.index') }}" title="Periode" class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-white/10 {{ request()->routeIs('panel.periode.*') ? 'bg-white/15 font-semibold' : '' }}">
+                        <x-icon name="calendar" class="h-5 w-5 shrink-0" />
+                        <span x-show="!collapsed" x-cloak>Periode</span>
+                    </a>
+                    <a href="{{ route('panel.siswa.index') }}" title="Data Siswa" class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-white/10 {{ request()->routeIs('panel.siswa.*') ? 'bg-white/15 font-semibold' : '' }}">
                         <x-icon name="user" class="h-5 w-5 shrink-0" />
-                        <span x-show="!collapsed" x-cloak>Daftar Siswa</span>
+                        <span x-show="!collapsed" x-cloak>Data Siswa</span>
+                    </a>
+                    <a href="{{ route('panel.kelas.index') }}" title="Kelola Kelas" class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-white/10 {{ request()->routeIs('panel.kelas.*') ? 'bg-white/15 font-semibold' : '' }}">
+                        <x-icon name="user" class="h-5 w-5 shrink-0" />
+                        <span x-show="!collapsed" x-cloak>Kelola Kelas</span>
                     </a>
                     <a href="{{ route('panel.validasi.kelas') }}" title="Validasi Sertifikat" class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-white/10 {{ request()->routeIs('panel.validasi.*') ? 'bg-white/15 font-semibold' : '' }}">
                         <x-icon name="doc" class="h-5 w-5 shrink-0" />
@@ -70,7 +78,7 @@
 
                     <a href="{{ route('panel.rubrik.index') }}" title="Rubrik Penilaian" class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-white/10 {{ request()->routeIs('panel.rubrik.*') ? 'bg-white/15 font-semibold' : '' }}">
                         <x-icon name="scale" class="h-5 w-5 shrink-0" />
-                        <span x-show="!collapsed" x-cloak>Rubrik Penilaian</span>
+                        <span x-show="!collapsed" x-cloak>Rubrik</span>
                     </a>
                     @if(auth()->user()->isPanitia())
                         <a href="{{ route('panel.akun.index') }}" title="Kelola Akun" class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-white/10 {{ request()->routeIs('panel.akun.*') ? 'bg-white/15 font-semibold' : '' }}">
