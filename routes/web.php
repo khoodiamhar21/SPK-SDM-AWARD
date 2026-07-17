@@ -63,7 +63,12 @@ Route::middleware('auth')->group(function () {
         Route::delete('/panel/rubrik/{rubrik}', [RubrikController::class, 'destroy'])->name('panel.rubrik.destroy');
 
         Route::get('/panel/siswa', [SiswaController::class, 'index'])->name('panel.siswa.index');
+        Route::get('/panel/siswa/create', [SiswaController::class, 'create'])->name('panel.siswa.create');
+        Route::post('/panel/siswa', [SiswaController::class, 'store'])->name('panel.siswa.store');
         Route::get('/panel/siswa/{siswa}', [SiswaController::class, 'show'])->name('panel.siswa.show');
+        Route::get('/panel/siswa/{siswa}/edit', [SiswaController::class, 'edit'])->name('panel.siswa.edit');
+        Route::put('/panel/siswa/{siswa}', [SiswaController::class, 'update'])->name('panel.siswa.update');
+        Route::delete('/panel/siswa/{siswa}', [SiswaController::class, 'destroy'])->name('panel.siswa.destroy');
         Route::post('/panel/ranking/generate', [SiswaController::class, 'generateRanking'])->name('panel.ranking.generate');
         Route::post('/panel/ranking/{ranking}/umumkan', [SiswaController::class, 'umumkanHasil'])->name('panel.ranking.umumkan');
 

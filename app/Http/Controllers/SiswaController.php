@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Kelas;
 use App\Models\Periode;
 use App\Models\Prestasi;
 use App\Models\Ranking;
@@ -13,8 +14,78 @@ class SiswaController extends Controller
 {
     public function index(Request $request)
     {
-        $siswas = Siswa::withCount('prestasis')->orderBy('nama')->get();
-        return view('panel.siswa-index', compact('siswas'));
+        $kelasId = $request->get('kelas_id');
+        $search = $request->get('search');
+        $query = Siswa::with('kelas')->withCount('prestasis');
+        if ($kelasId) {
+            $query->where('kelas_id', $kelasId);
+        }
+        if ($search) {
+            $query->where(function ($q) use ($search) {
+                $q->where('nama', 'like', "%{$search}%")
+                    ->orWhere('nisn', 'like', "%{$search}%");
+            });
+        }
+        $siswas = $query->orderBy('nama')->get();
+        $kelas = Kelas::orderBy('urutan')->get();
+
+        return view('panel.siswa-index', compact('siswas', 'kelas', 'kelasId', 'search'));
+    }
+
+    public function create()
+    {
+        $siswa = null;
+        $kelas = Kelas::orderBy('urutan')->get();
+
+        return view('panel.siswa-form', compact('siswa', 'kelas'));
+    }
+
+    public function store(Request $request)
+    {
+        $data = $request->validate([
+            'nisn' => 'nullable|string|max:30|unique:siswas,nisn',
+            'nama' => 'required|string|max:255',
+            'kelas_id' => 'required|exists:kelas,id',
+            'tempat_lahir' => 'nullable|string|max:255',
+            'tanggal_lahir' => 'nullable|date',
+            'jenis_kelamin' => 'nullable|in:L,P',
+            'alamat' => 'nullable|string|max:500',
+            'no_hp_ortu' => 'nullable|string|max:30',
+        ]);
+        Siswa::create($data);
+
+        return redirect()->route('panel.siswa.index')->with('success', 'Data siswa disimpan.');
+    }
+
+    public function edit(Siswa $siswa)
+    {
+        $kelas = Kelas::orderBy('urutan')->get();
+
+        return view('panel.siswa-form', compact('siswa', 'kelas'));
+    }
+
+    public function update(Request $request, Siswa $siswa)
+    {
+        $data = $request->validate([
+            'nisn' => 'nullable|string|max:30|unique:siswas,nisn,'.$siswa->id,
+            'nama' => 'required|string|max:255',
+            'kelas_id' => 'required|exists:kelas,id',
+            'tempat_lahir' => 'nullable|string|max:255',
+            'tanggal_lahir' => 'nullable|date',
+            'jenis_kelamin' => 'nullable|in:L,P',
+            'alamat' => 'nullable|string|max:500',
+            'no_hp_ortu' => 'nullable|string|max:30',
+        ]);
+        $siswa->update($data);
+
+        return redirect()->route('panel.siswa.index')->with('success', 'Data siswa diperbarui.');
+    }
+
+    public function destroy(Siswa $siswa)
+    {
+        $siswa->delete();
+
+        return redirect()->route('panel.siswa.index')->with('success', 'Data siswa dihapus.');
     }
 
     public function show(Siswa $siswa)
