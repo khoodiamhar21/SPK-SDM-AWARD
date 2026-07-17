@@ -21,7 +21,8 @@ class DashboardController extends Controller
             $nilaiSementara = ($siswa && $periodeAktif)
                 ? (new SawService())->hitungSiswa($periodeAktif, $siswa)
                 : null;
-            return view('siswa.dashboard', compact('siswa', 'prestasis', 'periodeAktif', 'nilaiSementara'));
+            $showNaikKelas = session('show_naik_kelas', false);
+            return view('siswa.dashboard', compact('siswa', 'prestasis', 'periodeAktif', 'nilaiSementara', 'showNaikKelas'));
         }
 
         // panitia / waka

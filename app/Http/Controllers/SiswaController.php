@@ -94,6 +94,53 @@ class SiswaController extends Controller
         return view('panel.siswa-show', compact('siswa'));
     }
 
+    public function naikKelasSiswa(Request $request)
+    {
+        $siswa = $request->user()->siswa;
+        $periodeAktif = Periode::where('aktif', true)->first();
+
+        if ($siswa) {
+            $siswa->naikKelas();
+            $siswa->update(['periode_terakhir_ikuti' => $periodeAktif?->id]);
+        }
+
+        return redirect()->back();
+    }
+
+    public function profilEdit(Request $request)
+    {
+        $user = $request->user();
+        $siswa = $user->siswa;
+
+        return view('siswa.profil', compact('user', 'siswa'));
+    }
+
+    public function profilUpdate(Request $request)
+    {
+        $user = $request->user();
+        $siswa = $user->siswa;
+
+        $validated = $request->validate([
+            'tempat_lahir' => ['nullable', 'string', 'max:255'],
+            'tanggal_lahir' => ['nullable', 'date'],
+            'jenis_kelamin' => ['nullable', 'in:L,P'],
+            'alamat' => ['nullable', 'string', 'max:500'],
+            'no_hp_ortu' => ['nullable', 'string', 'max:30'],
+        ]);
+
+        if ($siswa) {
+            if ($request->hasFile('foto')) {
+                $request->validate(['foto' => 'image|mimes:jpg,jpeg,png,webp|max:2048']);
+                $path = $request->file('foto')->store('foto-siswa', 'public');
+                $siswa->update(['foto' => $path]);
+            }
+
+            $siswa->update($validated);
+        }
+
+        return redirect()->route('siswa.profil')->with('status', 'Data diri diperbarui.');
+    }
+
     public function ranking(Request $request)
     {
         $periode = Periode::where('aktif', true)->first();

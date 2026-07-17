@@ -66,4 +66,20 @@
             </table>
         </div>
     </div>
+
+    @if($showNaikKelas && $siswa)
+        <div x-data="{ open: true }" x-show="open" x-cloak class="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
+            <div class="bg-white rounded-2xl p-6 max-w-sm w-full mx-4 shadow-xl">
+                <h3 class="font-semibold text-lg text-slate-800">Naik ke kelas berikutnya?</h3>
+                <p class="text-sm text-slate-500 mt-2">Kelas saat ini: <b>{{ $siswa->kelas?->nama }}</b>. Periode baru: <b>{{ $periodeAktif->nama }}</b>.</p>
+                <div class="mt-5 flex gap-3">
+                    <form method="POST" action="{{ route('siswa.naik-kelas') }}">
+                        @csrf
+                        <button type="submit" class="px-4 py-2 rounded-xl bg-blue-600 text-white text-sm font-semibold hover:bg-blue-700">Naik Kelas</button>
+                    </form>
+                    <button @click="open=false" class="px-4 py-2 rounded-xl bg-slate-100 text-slate-700 text-sm hover:bg-slate-200">Nanti / Lewati</button>
+                </div>
+            </div>
+        </div>
+    @endif
 </x-app-layout>

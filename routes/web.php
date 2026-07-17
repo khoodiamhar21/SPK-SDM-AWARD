@@ -26,6 +26,10 @@ Route::middleware('auth')->group(function () {
         Route::get('/prestasi/status', [PrestasiController::class, 'statusSeleksi'])->name('prestasi.status');
         Route::get('/prestasi/create', [PrestasiController::class, 'create'])->name('prestasi.create');
         Route::post('/prestasi', [PrestasiController::class, 'store'])->name('prestasi.store');
+
+        Route::post('/siswa/naik-kelas', [SiswaController::class, 'naikKelasSiswa'])->name('siswa.naik-kelas');
+        Route::get('/siswa/profil', [SiswaController::class, 'profilEdit'])->name('siswa.profil');
+        Route::post('/siswa/profil', [SiswaController::class, 'profilUpdate'])->name('siswa.profil.update');
     });
 
     Route::middleware('role:panitia,wakasiswa')->group(function () {
