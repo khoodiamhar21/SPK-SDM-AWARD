@@ -45,59 +45,72 @@
                         <span x-show="!collapsed" x-cloak>Status Seleksi</span>
                     </a>
                 @else
-                    <a href="{{ route('panel.periode.index') }}" title="Periode" class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-white/10 {{ request()->routeIs('panel.periode.*') ? 'bg-white/15 font-semibold' : '' }}">
-                        <x-icon name="calendar" class="h-5 w-5 shrink-0" />
-                        <span x-show="!collapsed" x-cloak>Periode</span>
-                    </a>
-                    <a href="{{ route('panel.siswa.index') }}" title="Data Siswa" class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-white/10 {{ request()->routeIs('panel.siswa.*') ? 'bg-white/15 font-semibold' : '' }}">
-                        <x-icon name="user" class="h-5 w-5 shrink-0" />
-                        <span x-show="!collapsed" x-cloak>Data Siswa</span>
-                    </a>
-                    <a href="{{ route('panel.kelas.index') }}" title="Kelola Kelas" class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-white/10 {{ request()->routeIs('panel.kelas.*') ? 'bg-white/15 font-semibold' : '' }}">
-                        <x-icon name="user" class="h-5 w-5 shrink-0" />
-                        <span x-show="!collapsed" x-cloak>Kelola Kelas</span>
-                    </a>
-                    <a href="{{ route('panel.validasi.kelas') }}" title="Validasi Sertifikat" class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-white/10 {{ request()->routeIs('panel.validasi.*') ? 'bg-white/15 font-semibold' : '' }}">
-                        <x-icon name="doc" class="h-5 w-5 shrink-0" />
-                        <span x-show="!collapsed" x-cloak>Validasi Sertifikat</span>
-                    </a>
-                    <a href="{{ route('panel.penilaian.kelas') }}" title="Penilaian" class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-white/10 {{ request()->routeIs('panel.penilaian.*') ? 'bg-white/15 font-semibold' : '' }}">
-                        <x-icon name="scale" class="h-5 w-5 shrink-0" />
-                        <span x-show="!collapsed" x-cloak>Penilaian</span>
-                    </a>
-                    <a href="{{ route('panel.rekap.index') }}" title="Rekap Penilaian" class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-white/10 {{ request()->routeIs('panel.rekap.*') ? 'bg-white/15 font-semibold' : '' }}">
-                        <x-icon name="star" class="h-5 w-5 shrink-0" />
-                        <span x-show="!collapsed" x-cloak>Rekap Penilaian</span>
-                    </a>
-                    <a href="{{ route('panel.ranking') }}" title="Ranking" class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-white/10 {{ request()->routeIs('panel.ranking') ? 'bg-white/15 font-semibold' : '' }}">
-                        <x-icon name="trophy" class="h-5 w-5 shrink-0" />
-                        <span x-show="!collapsed" x-cloak>Ranking</span>
-                    </a>
-
-                    <div x-show="!collapsed" x-cloak class="border-t border-blue-600/50 my-2"></div>
-
-                    <a href="{{ route('panel.rubrik.index') }}" title="Rubrik Penilaian" class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-white/10 {{ request()->routeIs('panel.rubrik.*') ? 'bg-white/15 font-semibold' : '' }}">
-                        <x-icon name="scale" class="h-5 w-5 shrink-0" />
-                        <span x-show="!collapsed" x-cloak>Rubrik</span>
-                    </a>
                     @if(auth()->user()->isPanitia())
-                        <a href="{{ route('panel.akun.index') }}" title="Kelola Akun" class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-white/10 {{ request()->routeIs('panel.akun.*') ? 'bg-white/15 font-semibold' : '' }}">
+                        <a href="{{ route('panel.periode.index') }}" title="Periode" class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-white/10 {{ request()->routeIs('panel.periode.*') ? 'bg-white/15 font-semibold' : '' }}">
+                            <x-icon name="calendar" class="h-5 w-5 shrink-0" />
+                            <span x-show="!collapsed" x-cloak>Periode</span>
+                        </a>
+                        <a href="{{ route('panel.siswa.index') }}" title="Data Siswa" class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-white/10 {{ request()->routeIs('panel.siswa.*') ? 'bg-white/15 font-semibold' : '' }}">
                             <x-icon name="user" class="h-5 w-5 shrink-0" />
-                            <span x-show="!collapsed" x-cloak>Kelola Akun</span>
+                            <span x-show="!collapsed" x-cloak>Data Siswa</span>
+                        </a>
+                        <a href="{{ route('panel.kelas.index') }}" title="Kelola Kelas" class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-white/10 {{ request()->routeIs('panel.kelas.*') ? 'bg-white/15 font-semibold' : '' }}">
+                            <x-icon name="building" class="h-5 w-5 shrink-0" />
+                            <span x-show="!collapsed" x-cloak>Kelola Kelas</span>
                         </a>
                     @endif
-                    <a href="{{ route('panel.banner.index') }}" title="Banner" class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-white/10 {{ request()->routeIs('panel.banner.*') ? 'bg-white/15 font-semibold' : '' }}">
-                        <x-icon name="star" class="h-5 w-5 shrink-0" />
-                        <span x-show="!collapsed" x-cloak>Banner</span>
-                    </a>
-                    <a href="{{ route('panel.pengumuman.index') }}" title="Pengumuman" class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-white/10 {{ request()->routeIs('panel.pengumuman.*') ? 'bg-white/15 font-semibold' : '' }}">
-                        <x-icon name="doc" class="h-5 w-5 shrink-0" />
-                        <span x-show="!collapsed" x-cloak>Pengumuman</span>
-                    </a>
-                    <a href="{{ route('panel.berita.index') }}" title="Berita" class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-white/10 {{ request()->routeIs('panel.berita.*') ? 'bg-white/15 font-semibold' : '' }}">
-                        <x-icon name="doc" class="h-5 w-5 shrink-0" />
-                        <span x-show="!collapsed" x-cloak>Berita</span>
-                    </a>
+                    @if(auth()->user()->isWaka())
+                        <a href="{{ route('panel.validasi.kelas') }}" title="Validasi Sertifikat" class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-white/10 {{ request()->routeIs('panel.validasi.*') ? 'bg-white/15 font-semibold' : '' }}">
+                            <x-icon name="doc" class="h-5 w-5 shrink-0" />
+                            <span x-show="!collapsed" x-cloak>Validasi Sertifikat</span>
+                        </a>
+                        <a href="{{ route('panel.rekap.index') }}" title="Rekap Prestasi Siswa" class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-white/10 {{ request()->routeIs('panel.rekap.*') ? 'bg-white/15 font-semibold' : '' }}">
+                            <x-icon name="star" class="h-5 w-5 shrink-0" />
+                            <span x-show="!collapsed" x-cloak>Rekap Prestasi Siswa</span>
+                        </a>
+                    @else
+                        <a href="{{ route('panel.validasi.kelas') }}" title="Validasi Sertifikat" class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-white/10 {{ request()->routeIs('panel.validasi.*') ? 'bg-white/15 font-semibold' : '' }}">
+                            <x-icon name="doc" class="h-5 w-5 shrink-0" />
+                            <span x-show="!collapsed" x-cloak>Validasi Sertifikat</span>
+                        </a>
+                        <a href="{{ route('panel.penilaian.kelas') }}" title="Penilaian" class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-white/10 {{ request()->routeIs('panel.penilaian.*') ? 'bg-white/15 font-semibold' : '' }}">
+                            <x-icon name="scale" class="h-5 w-5 shrink-0" />
+                            <span x-show="!collapsed" x-cloak>Penilaian</span>
+                        </a>
+                        <a href="{{ route('panel.rekap.index') }}" title="Rekap Penilaian" class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-white/10 {{ request()->routeIs('panel.rekap.*') ? 'bg-white/15 font-semibold' : '' }}">
+                            <x-icon name="star" class="h-5 w-5 shrink-0" />
+                            <span x-show="!collapsed" x-cloak>Rekap Penilaian</span>
+                        </a>
+                        <a href="{{ route('panel.ranking') }}" title="Ranking" class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-white/10 {{ request()->routeIs('panel.ranking') ? 'bg-white/15 font-semibold' : '' }}">
+                            <x-icon name="trophy" class="h-5 w-5 shrink-0" />
+                            <span x-show="!collapsed" x-cloak>Ranking</span>
+                        </a>
+
+                        <div x-show="!collapsed" x-cloak class="border-t border-blue-600/50 my-2"></div>
+
+                        <a href="{{ route('panel.rubrik.index') }}" title="Rubrik Penilaian" class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-white/10 {{ request()->routeIs('panel.rubrik.*') ? 'bg-white/15 font-semibold' : '' }}">
+                            <x-icon name="scale" class="h-5 w-5 shrink-0" />
+                            <span x-show="!collapsed" x-cloak>Rubrik</span>
+                        </a>
+                        @if(auth()->user()->isPanitia())
+                            <a href="{{ route('panel.akun.index') }}" title="Kelola Akun" class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-white/10 {{ request()->routeIs('panel.akun.*') ? 'bg-white/15 font-semibold' : '' }}">
+                                <x-icon name="user" class="h-5 w-5 shrink-0" />
+                                <span x-show="!collapsed" x-cloak>Kelola Akun</span>
+                            </a>
+                        @endif
+                        <a href="{{ route('panel.banner.index') }}" title="Banner" class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-white/10 {{ request()->routeIs('panel.banner.*') ? 'bg-white/15 font-semibold' : '' }}">
+                            <x-icon name="star" class="h-5 w-5 shrink-0" />
+                            <span x-show="!collapsed" x-cloak>Banner</span>
+                        </a>
+                        <a href="{{ route('panel.pengumuman.index') }}" title="Pengumuman" class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-white/10 {{ request()->routeIs('panel.pengumuman.*') ? 'bg-white/15 font-semibold' : '' }}">
+                            <x-icon name="doc" class="h-5 w-5 shrink-0" />
+                            <span x-show="!collapsed" x-cloak>Pengumuman</span>
+                        </a>
+                        <a href="{{ route('panel.berita.index') }}" title="Berita" class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-white/10 {{ request()->routeIs('panel.berita.*') ? 'bg-white/15 font-semibold' : '' }}">
+                            <x-icon name="doc" class="h-5 w-5 shrink-0" />
+                            <span x-show="!collapsed" x-cloak>Berita</span>
+                        </a>
+                    @endif
                 @endif
 
                 <a href="{{ route('profile.edit') }}" title="Profil" class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-white/10">
@@ -133,21 +146,28 @@
                         <a href="{{ route('prestasi.create') }}" @click="sidebar=false" class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-white/10 {{ request()->routeIs('prestasi.create') ? 'bg-white/15 font-semibold' : '' }}"><x-icon name="plus" class="h-5 w-5" /> Upload Prestasi</a>
                         <a href="{{ route('prestasi.status') }}" @click="sidebar=false" class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-white/10 {{ request()->routeIs('prestasi.status') ? 'bg-white/15 font-semibold' : '' }}"><x-icon name="trophy" class="h-5 w-5" /> Status Seleksi</a>
                     @else
-                        <a href="{{ route('panel.periode.index') }}" @click="sidebar=false" class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-white/10 {{ request()->routeIs('panel.periode.*') ? 'bg-white/15 font-semibold' : '' }}"><x-icon name="calendar" class="h-5 w-5" /> Periode</a>
-                        <a href="{{ route('panel.siswa.index') }}" @click="sidebar=false" class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-white/10 {{ request()->routeIs('panel.siswa.*') ? 'bg-white/15 font-semibold' : '' }}"><x-icon name="user" class="h-5 w-5" /> Data Siswa</a>
-                        <a href="{{ route('panel.kelas.index') }}" @click="sidebar=false" class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-white/10 {{ request()->routeIs('panel.kelas.*') ? 'bg-white/15 font-semibold' : '' }}"><x-icon name="user" class="h-5 w-5" /> Kelola Kelas</a>
-                        <a href="{{ route('panel.validasi.kelas') }}" @click="sidebar=false" class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-white/10 {{ request()->routeIs('panel.validasi.*') ? 'bg-white/15 font-semibold' : '' }}"><x-icon name="doc" class="h-5 w-5" /> Validasi Sertifikat</a>
-                        <a href="{{ route('panel.penilaian.kelas') }}" @click="sidebar=false" class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-white/10 {{ request()->routeIs('panel.penilaian.*') ? 'bg-white/15 font-semibold' : '' }}"><x-icon name="scale" class="h-5 w-5" /> Penilaian</a>
-                        <a href="{{ route('panel.rekap.index') }}" @click="sidebar=false" class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-white/10 {{ request()->routeIs('panel.rekap.*') ? 'bg-white/15 font-semibold' : '' }}"><x-icon name="star" class="h-5 w-5" /> Rekap Penilaian</a>
-                        <a href="{{ route('panel.ranking') }}" @click="sidebar=false" class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-white/10 {{ request()->routeIs('panel.ranking') ? 'bg-white/15 font-semibold' : '' }}"><x-icon name="trophy" class="h-5 w-5" /> Ranking</a>
-                        <div class="border-t border-blue-600/50 my-2"></div>
-                        <a href="{{ route('panel.rubrik.index') }}" @click="sidebar=false" class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-white/10 {{ request()->routeIs('panel.rubrik.*') ? 'bg-white/15 font-semibold' : '' }}"><x-icon name="scale" class="h-5 w-5" /> Rubrik</a>
                         @if(auth()->user()->isPanitia())
-                            <a href="{{ route('panel.akun.index') }}" @click="sidebar=false" class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-white/10 {{ request()->routeIs('panel.akun.*') ? 'bg-white/15 font-semibold' : '' }}"><x-icon name="user" class="h-5 w-5" /> Kelola Akun</a>
+                            <a href="{{ route('panel.periode.index') }}" @click="sidebar=false" class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-white/10 {{ request()->routeIs('panel.periode.*') ? 'bg-white/15 font-semibold' : '' }}"><x-icon name="calendar" class="h-5 w-5" /> Periode</a>
+                            <a href="{{ route('panel.siswa.index') }}" @click="sidebar=false" class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-white/10 {{ request()->routeIs('panel.siswa.*') ? 'bg-white/15 font-semibold' : '' }}"><x-icon name="user" class="h-5 w-5" /> Data Siswa</a>
+                            <a href="{{ route('panel.kelas.index') }}" @click="sidebar=false" class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-white/10 {{ request()->routeIs('panel.kelas.*') ? 'bg-white/15 font-semibold' : '' }}"><x-icon name="building" class="h-5 w-5" /> Kelola Kelas</a>
                         @endif
-                        <a href="{{ route('panel.banner.index') }}" @click="sidebar=false" class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-white/10 {{ request()->routeIs('panel.banner.*') ? 'bg-white/15 font-semibold' : '' }}"><x-icon name="star" class="h-5 w-5" /> Banner</a>
-                        <a href="{{ route('panel.pengumuman.index') }}" @click="sidebar=false" class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-white/10 {{ request()->routeIs('panel.pengumuman.*') ? 'bg-white/15 font-semibold' : '' }}"><x-icon name="doc" class="h-5 w-5" /> Pengumuman</a>
-                        <a href="{{ route('panel.berita.index') }}" @click="sidebar=false" class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-white/10 {{ request()->routeIs('panel.berita.*') ? 'bg-white/15 font-semibold' : '' }}"><x-icon name="doc" class="h-5 w-5" /> Berita</a>
+                        @if(auth()->user()->isWaka())
+                            <a href="{{ route('panel.validasi.kelas') }}" @click="sidebar=false" class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-white/10 {{ request()->routeIs('panel.validasi.*') ? 'bg-white/15 font-semibold' : '' }}"><x-icon name="doc" class="h-5 w-5" /> Validasi Sertifikat</a>
+                            <a href="{{ route('panel.rekap.index') }}" @click="sidebar=false" class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-white/10 {{ request()->routeIs('panel.rekap.*') ? 'bg-white/15 font-semibold' : '' }}"><x-icon name="star" class="h-5 w-5" /> Rekap Prestasi Siswa</a>
+                        @else
+                            <a href="{{ route('panel.validasi.kelas') }}" @click="sidebar=false" class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-white/10 {{ request()->routeIs('panel.validasi.*') ? 'bg-white/15 font-semibold' : '' }}"><x-icon name="doc" class="h-5 w-5" /> Validasi Sertifikat</a>
+                            <a href="{{ route('panel.penilaian.kelas') }}" @click="sidebar=false" class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-white/10 {{ request()->routeIs('panel.penilaian.*') ? 'bg-white/15 font-semibold' : '' }}"><x-icon name="scale" class="h-5 w-5" /> Penilaian</a>
+                            <a href="{{ route('panel.rekap.index') }}" @click="sidebar=false" class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-white/10 {{ request()->routeIs('panel.rekap.*') ? 'bg-white/15 font-semibold' : '' }}"><x-icon name="star" class="h-5 w-5" /> Rekap Penilaian</a>
+                            <a href="{{ route('panel.ranking') }}" @click="sidebar=false" class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-white/10 {{ request()->routeIs('panel.ranking') ? 'bg-white/15 font-semibold' : '' }}"><x-icon name="trophy" class="h-5 w-5" /> Ranking</a>
+                            <div class="border-t border-blue-600/50 my-2"></div>
+                            <a href="{{ route('panel.rubrik.index') }}" @click="sidebar=false" class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-white/10 {{ request()->routeIs('panel.rubrik.*') ? 'bg-white/15 font-semibold' : '' }}"><x-icon name="scale" class="h-5 w-5" /> Rubrik</a>
+                            @if(auth()->user()->isPanitia())
+                                <a href="{{ route('panel.akun.index') }}" @click="sidebar=false" class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-white/10 {{ request()->routeIs('panel.akun.*') ? 'bg-white/15 font-semibold' : '' }}"><x-icon name="user" class="h-5 w-5" /> Kelola Akun</a>
+                            @endif
+                            <a href="{{ route('panel.banner.index') }}" @click="sidebar=false" class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-white/10 {{ request()->routeIs('panel.banner.*') ? 'bg-white/15 font-semibold' : '' }}"><x-icon name="star" class="h-5 w-5" /> Banner</a>
+                            <a href="{{ route('panel.pengumuman.index') }}" @click="sidebar=false" class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-white/10 {{ request()->routeIs('panel.pengumuman.*') ? 'bg-white/15 font-semibold' : '' }}"><x-icon name="doc" class="h-5 w-5" /> Pengumuman</a>
+                            <a href="{{ route('panel.berita.index') }}" @click="sidebar=false" class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-white/10 {{ request()->routeIs('panel.berita.*') ? 'bg-white/15 font-semibold' : '' }}"><x-icon name="doc" class="h-5 w-5" /> Berita</a>
+                        @endif
                     @endif
                     <a href="{{ route('profile.edit') }}" @click="sidebar=false" class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-white/10"><x-icon name="user" class="h-5 w-5" /> Profil</a>
                 </nav>
@@ -168,7 +188,6 @@
                 <div class="px-4 sm:px-6 h-16 flex items-center justify-between">
                     <div class="flex items-center gap-3">
                         <button @click="sidebar = !sidebar" class="md:hidden p-2 rounded-lg hover:bg-slate-100 text-slate-600"><x-icon name="menu" class="h-6 w-6" /></button>
-                        <button @click="collapsed = !collapsed" title="Ciutkan menu" class="hidden md:inline-flex p-2 rounded-lg hover:bg-slate-100 text-slate-600"><x-icon name="menu" class="h-6 w-6" /></button>
                         <img src="{{ asset('img/logosd.png') }}" class="h-9 w-9 object-contain" alt="Logo SDM">
                         <div class="leading-tight">
                             <div class="font-extrabold text-blue-800 text-sm sm:text-base">SDM AWARD</div>

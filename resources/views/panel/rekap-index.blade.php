@@ -5,6 +5,15 @@
     </div>
 
     @if($periode)
+        <div class="mb-4 flex flex-wrap items-center gap-2">
+            <a href="{{ route('panel.rekap.index') }}"
+               class="px-3 py-1.5 rounded-full text-sm font-medium border {{ is_null($filterKelas) ? 'bg-blue-600 text-white border-blue-600' : 'bg-white text-slate-600 border-slate-200 hover:bg-slate-50' }}">Semua</a>
+            @foreach($kelasList as $k)
+                <a href="{{ route('panel.rekap.index', ['kelas' => $k->id]) }}"
+                   class="px-3 py-1.5 rounded-full text-sm font-medium border {{ (string) $filterKelas === (string) $k->id ? 'bg-blue-600 text-white border-blue-600' : 'bg-white text-slate-600 border-slate-200 hover:bg-slate-50' }}">Kelas {{ $k->nama }}</a>
+            @endforeach
+        </div>
+
         <div class="bg-white rounded-xl shadow-sm border overflow-hidden">
             <div class="px-5 py-3 border-b bg-slate-50 text-sm font-medium text-slate-600">Periode: {{ $periode->nama }}</div>
             <div class="overflow-x-auto">
@@ -24,7 +33,7 @@
                             <tr class="hover:bg-slate-50 align-top">
                                 <td class="px-5 py-3 text-slate-500">{{ $i + 1 }}</td>
                                 <td class="px-5 py-3 font-semibold">{{ $s->nama }}</td>
-                                <td class="px-5 py-3 text-slate-500">Kelas {{ $s->kelas }}</td>
+                                <td class="px-5 py-3 text-slate-500">Kelas {{ $s->kelas->nama ?? '-' }}</td>
                                 <td class="px-5 py-3">
                                     <div class="space-y-1">
                                         @foreach($s->prestasis as $p)

@@ -30,6 +30,15 @@
             <div class="mb-4 rounded-xl bg-blue-50 border border-blue-200 text-blue-800 px-4 py-3 text-sm">{{ session('status') }}</div>
         @endif
 
+        <div class="mb-4 flex flex-wrap items-center gap-2">
+            <a href="{{ route('panel.ranking') }}"
+               class="px-3 py-1.5 rounded-full text-sm font-medium border {{ is_null($filterKelas) ? 'bg-blue-600 text-white border-blue-600' : 'bg-white text-slate-600 border-slate-200 hover:bg-slate-50' }}">Semua</a>
+            @foreach($kelasList as $k)
+                <a href="{{ route('panel.ranking', ['kelas' => $k->id]) }}"
+                   class="px-3 py-1.5 rounded-full text-sm font-medium border {{ (string) $filterKelas === (string) $k->id ? 'bg-blue-600 text-white border-blue-600' : 'bg-white text-slate-600 border-slate-200 hover:bg-slate-50' }}">Kelas {{ $k->nama }}</a>
+            @endforeach
+        </div>
+
         @if($final)
             <div class="mb-3 text-sm">
                 @if($final->disetujui_at)
@@ -59,7 +68,7 @@
                         </tr>
                     </thead>
                     <tbody class="divide-y">
-                        @forelse($final->hasil as $r)
+                        @forelse(($filterKelas ? collect($final->hasil)->where('kelas_id', (int) $filterKelas)->values() : collect($final->hasil)) as $r)
                             <tr class="hover:bg-slate-50">
                                 <td class="px-5 py-3 font-bold {{ $r['peringkat']===1 ? 'text-blue-600' : '' }}">{{ $r['peringkat'] }}</td>
                                 <td class="px-5 py-3 font-semibold">{{ $r['nama'] }}</td>

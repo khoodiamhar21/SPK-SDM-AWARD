@@ -10,7 +10,7 @@
         </div>
         <div class="bg-white rounded-xl shadow-sm p-5 border">
             <div class="text-sm text-slate-500">Kelas</div>
-            <div class="text-2xl font-bold">{{ $siswa->kelas ?? '-' }}</div>
+            <div class="text-2xl font-bold">{{ $siswa->kelas->nama ?? '-' }}</div>
         </div>
         <div class="bg-white rounded-xl shadow-sm p-5 border">
             <div class="text-sm text-slate-500">Periode</div>

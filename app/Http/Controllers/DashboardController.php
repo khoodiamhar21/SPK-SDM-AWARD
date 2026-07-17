@@ -26,6 +26,10 @@ class DashboardController extends Controller
         }
 
         // panitia / waka
+        if ($user->isWaka()) {
+            return view('panel.dashboard-waka', compact('periodeAktif'));
+        }
+
         $totalSiswa = Siswa::count();
         $totalPrestasi = Prestasi::count();
         $menunggu = Prestasi::where('status_validasi', 'menunggu')->count();

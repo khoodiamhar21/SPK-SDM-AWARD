@@ -157,6 +157,9 @@ class SiswaController extends Controller
     {
         $periode = Periode::where('aktif', true)->first();
 
+        $kelasList = Kelas::orderBy('urutan')->get();
+        $filterKelas = $request->query('kelas');
+
         $final = null;
         $riwayat = collect();
         if ($periode) {
@@ -164,7 +167,7 @@ class SiswaController extends Controller
             $riwayat = Ranking::where('periode_id', $periode->id)->latest()->get();
         }
 
-        return view('panel.ranking', compact('periode', 'final', 'riwayat'));
+        return view('panel.ranking', compact('periode', 'final', 'riwayat', 'kelasList', 'filterKelas'));
     }
 
     public function generateRanking(Request $request)

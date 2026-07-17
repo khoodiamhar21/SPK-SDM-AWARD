@@ -127,7 +127,7 @@
                         </div>
                         <div class="leading-tight">
                             <div class="font-bold text-slate-800 text-sm">{{ $pr->siswa->nama }}</div>
-                            <div class="text-[11px] text-blue-600">Kelas {{ $pr->siswa->kelas }}</div>
+                            <div class="text-[11px] text-blue-600">Kelas {{ $pr->siswa->kelas->nama ?? '-' }}</div>
                         </div>
                     </div>
                     <div class="flex flex-wrap gap-1.5">

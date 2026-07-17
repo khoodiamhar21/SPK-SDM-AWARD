@@ -32,8 +32,9 @@ class SawService
     ];
 
     /**
-     * Hitung SAW untuk satu periode.
-     * @return Collection [{siswa, nilai_akhir, detail, jumlah_prestasi}]
+     * Hitung SAW untuk satu periode, dipecah PER KELAS.
+     * Setiap kelas memiliki peringkat sendiri (Juara 1, 2, 3 dst per kelas).
+     * @return Collection [{siswa, kelas_id, nilai_akhir, detail, jumlah_prestasi, peringkat}]
      */
     public function hitung(Periode $periode): Collection
     {
@@ -44,12 +45,13 @@ class SawService
 
         $perSiswa = $prestasis->groupBy('siswa_id');
 
-        // Matriks X: [siswa_id][C1/C2/C3] = sum nilai_rubrik per tingkat
+        // Matriks X per siswa: [siswa_id] = ['kelas_id'=>.., 'C1/C2/C3'=>..]
         $matriksX = [];
         $metaSiswa = [];
         foreach ($perSiswa as $siswaId => $items) {
-            $metaSiswa[$siswaId] = $items->first()->siswa;
-            $row = ['C1' => 0, 'C2' => 0, 'C3' => 0];
+            $siswa = $items->first()->siswa;
+            $metaSiswa[$siswaId] = $siswa;
+            $row = ['kelas_id' => $siswa?->kelas_id, 'C1' => 0, 'C2' => 0, 'C3' => 0];
             foreach ($items as $p) {
                 $kode = self::TINGKAT_KE_KRITERIA[$p->tingkat] ?? null;
                 if (! $kode) {
@@ -60,52 +62,71 @@ class SawService
             $matriksX[$siswaId] = $row;
         }
 
-        // Normalisasi (benefit => nilai / max)
-        $maxPerKriteria = [];
-        foreach (['C1', 'C2', 'C3'] as $kode) {
-            $maxPerKriteria[$kode] = collect($matriksX)->max(fn ($r) => $r[$kode] ?? 0) ?: 1;
+        // Kelompokkan siswa per kelas, lalu SAW per kelas (normalisasi + peringkat masing-masing)
+        $hasil = collect();
+        $grouped = [];
+        foreach ($matriksX as $siswaId => $row) {
+            $kelasId = $row['kelas_id'];
+            $groupKey = $kelasId ?? 'tanpa-kelas';
+            if (! isset($grouped[$groupKey])) {
+                $grouped[$groupKey] = [];
+            }
+            $grouped[$groupKey][$siswaId] = $row;
         }
 
-        $hasil = [];
-        foreach ($matriksX as $siswaId => $row) {
-            $totalVi = 0;
-            $detail = [];
+        foreach ($grouped as $rows) {
+            // Normalisasi per kelas (benefit => nilai / max kelas tersebut)
+            $maxPerKriteria = [];
             foreach (['C1', 'C2', 'C3'] as $kode) {
-                $w = self::bobotKriteria($kode);
-                $x = $row[$kode] ?? 0;
-                $rnorm = $maxPerKriteria[$kode] ? $x / $maxPerKriteria[$kode] : 0;
-                $kontrib = $rnorm * $w;
-                $totalVi += $kontrib;
-                $detail[$kode] = [
-                    'x' => round($x, 2),
-                    'rnorm' => round($rnorm, 4),
-                    'w' => $w,
-                    'kontrib' => round($kontrib, 4),
+                $maxPerKriteria[$kode] = collect($rows)->max(fn ($r) => $r[$kode] ?? 0) ?: 1;
+            }
+
+            $hasilKelas = [];
+            foreach ($rows as $siswaId => $row) {
+                $totalVi = 0;
+                $detail = [];
+                foreach (['C1', 'C2', 'C3'] as $kode) {
+                    $w = self::bobotKriteria($kode);
+                    $x = $row[$kode] ?? 0;
+                    $rnorm = $maxPerKriteria[$kode] ? $x / $maxPerKriteria[$kode] : 0;
+                    $kontrib = $rnorm * $w;
+                    $totalVi += $kontrib;
+                    $detail[$kode] = [
+                        'x' => round($x, 2),
+                        'rnorm' => round($rnorm, 4),
+                        'w' => $w,
+                        'kontrib' => round($kontrib, 4),
+                    ];
+                }
+                $nilaiAkhir = (float) ($row['C1'] * self::BOBOT_TINGKAT['nasional']
+                    + $row['C2'] * self::BOBOT_TINGKAT['provinsi']
+                    + $row['C3'] * self::BOBOT_TINGKAT['kabupaten']);
+
+                $hasilKelas[] = [
+                    'siswa' => $metaSiswa[$siswaId],
+                    'kelas_id' => $row['kelas_id'],
+                    'total_vi' => round($totalVi, 4),
+                    'nilai_akhir' => round($nilaiAkhir, 2),
+                    'detail' => $detail,
+                    'jumlah_prestasi' => count($perSiswa[$siswaId]),
                 ];
             }
-            // nilai akhir berbobot sesuai panduan (0.5*N + 0.3*P + 0.2*K)
-            $nilaiAkhir = (float) ($row['C1'] * self::BOBOT_TINGKAT['nasional']
-                + $row['C2'] * self::BOBOT_TINGKAT['provinsi']
-                + $row['C3'] * self::BOBOT_TINGKAT['kabupaten']);
 
-            $hasil[] = [
-                'siswa' => $metaSiswa[$siswaId],
-                'total_vi' => round($totalVi, 4),
-                'nilai_akhir' => round($nilaiAkhir, 2),
-                'detail' => $detail,
-                'jumlah_prestasi' => count($perSiswa[$siswaId]),
-            ];
+            $hasilKelas = collect($hasilKelas)->sortByDesc('nilai_akhir')->values();
+
+            $hasilKelas->transform(function ($item, $i) {
+                $item['peringkat'] = $i + 1;
+
+                return $item;
+            });
+
+            $hasil = $hasil->concat($hasilKelas);
         }
 
-        $hasil = collect($hasil)->sortByDesc('nilai_akhir')->values();
-
-        $hasil->transform(function ($item, $i) {
-            $item['peringkat'] = $i + 1;
-
-            return $item;
-        });
-
-        return $hasil;
+        return $hasil->sortBy([
+            ['kelas_id', 'asc'],
+            ['peringkat', 'asc'],
+        ])->values();
     }
 
     protected static function bobotKriteria(string $kode): float

@@ -93,7 +93,7 @@ class PenilaianController extends Controller
             'catatan' => $data['catatan'] ?? $prestasi->catatan,
         ]);
 
-        return redirect()->route('panel.penilaian.index')
+        return redirect()->route('panel.penilaian.prestasi', $prestasi->siswa)
             ->with('status', 'Nilai prestasi disimpan.');
     }
 }

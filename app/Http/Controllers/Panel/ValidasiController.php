@@ -17,7 +17,17 @@ class ValidasiController extends Controller
         $kelas = Kelas::orderBy('urutan')->get();
         $periode = Periode::where('aktif', true)->first();
 
-        return view('panel.validasi-kelas', compact('kelas', 'periode'));
+        $rekap = collect();
+        if ($periode) {
+            $rekap = Prestasi::with(['siswa.kelas', 'periode'])
+                ->where('periode_id', $periode->id)
+                ->orderBy('status_validasi')
+                ->get()
+                ->sortBy(fn ($p) => ($p->siswa?->kelas?->urutan ?? 99).'|'.$p->siswa?->nama)
+                ->values();
+        }
+
+        return view('panel.validasi-kelas', compact('kelas', 'periode', 'rekap'));
     }
 
     public function siswa(Kelas $kelas)
@@ -84,7 +94,7 @@ class ValidasiController extends Controller
             $prestasi->save();
         }
 
-        return redirect()->route('panel.validasi.index', ['status' => $data['status_validasi']])
+        return redirect()->route('panel.validasi.prestasi', $prestasi->siswa)
             ->with('status', 'Putusan berkas: '.($data['status_validasi'] === 'valid' ? 'LOLOS validasi' : 'DITOLAK').'.');
     }
 }

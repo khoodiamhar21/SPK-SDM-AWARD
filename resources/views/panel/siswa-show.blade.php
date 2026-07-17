@@ -5,7 +5,7 @@
 
     <div class="grid sm:grid-cols-3 gap-4 mb-6">
         <div class="bg-white rounded-xl shadow-sm p-5 border"><div class="text-sm text-slate-500">NIS</div><div class="text-lg font-semibold">{{ $siswa->nis ?? '-' }}</div></div>
-        <div class="bg-white rounded-xl shadow-sm p-5 border"><div class="text-sm text-slate-500">Kelas</div><div class="text-lg font-semibold">{{ $siswa->kelas }}</div></div>
+        <div class="bg-white rounded-xl shadow-sm p-5 border"><div class="text-sm text-slate-500">Kelas</div><div class="text-lg font-semibold">{{ $siswa->kelas->nama ?? '-' }}</div></div>
         <div class="bg-white rounded-xl shadow-sm p-5 border"><div class="text-sm text-slate-500">Total Prestasi</div><div class="text-lg font-semibold text-blue-600">{{ $siswa->prestasis->count() }}</div></div>
     </div>
 

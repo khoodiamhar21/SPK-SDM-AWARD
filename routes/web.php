@@ -35,6 +35,8 @@ Route::middleware('auth')->group(function () {
 
     Route::middleware('role:panitia,wakasiswa')->group(function () {
         Route::get('/panel/ranking', [SiswaController::class, 'ranking'])->name('panel.ranking');
+        // Rekap Prestasi Siswa (waka hanya boleh lihat rekap & validasi)
+        Route::get('/panel/rekap', [RekapController::class, 'index'])->name('panel.rekap.index');
     });
 
     Route::middleware('role:panitia')->group(function () {
@@ -64,8 +66,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/panel/penilaian/{prestasi}', [PenilaianController::class, 'show'])->name('panel.penilaian.show');
         Route::post('/panel/penilaian/{prestasi}/nilai', [PenilaianController::class, 'nilai'])->name('panel.penilaian.nilai');
 
-        // Rekap Penilaian
-        Route::get('/panel/rekap', [RekapController::class, 'index'])->name('panel.rekap.index');
+        // Rekap Penilaian (dipindah ke grup panitia,wakasiswa di atas)
 
         Route::get('/panel/kriteria', [KriteriaController::class, 'index'])->name('panel.kriteria.index');
         Route::post('/panel/kriteria/bobot', [KriteriaController::class, 'updateBobot'])->name('panel.kriteria.bobot');
