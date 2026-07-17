@@ -107,6 +107,18 @@ class SiswaController extends Controller
         return redirect()->back();
     }
 
+    public function lewatiNaikKelas(Request $request)
+    {
+        $siswa = $request->user()->siswa;
+        $periodeAktif = Periode::where('aktif', true)->first();
+
+        if ($siswa && $periodeAktif) {
+            $siswa->update(['periode_terakhir_ikuti' => $periodeAktif->id]);
+        }
+
+        return redirect()->back();
+    }
+
     public function profilEdit(Request $request)
     {
         $user = $request->user();

@@ -77,7 +77,10 @@
                         @csrf
                         <button type="submit" class="px-4 py-2 rounded-xl bg-blue-600 text-white text-sm font-semibold hover:bg-blue-700">Naik Kelas</button>
                     </form>
-                    <button @click="open=false" class="px-4 py-2 rounded-xl bg-slate-100 text-slate-700 text-sm hover:bg-slate-200">Nanti / Lewati</button>
+                    <form method="POST" action="{{ route('siswa.naik-kelas.lewati') }}">
+                        @csrf
+                        <button type="submit" class="px-4 py-2 rounded-xl bg-slate-100 text-slate-700 text-sm hover:bg-slate-200">Nanti / Lewati</button>
+                    </form>
                 </div>
             </div>
         </div>

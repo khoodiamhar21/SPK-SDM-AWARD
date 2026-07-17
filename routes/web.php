@@ -28,6 +28,7 @@ Route::middleware('auth')->group(function () {
         Route::post('/prestasi', [PrestasiController::class, 'store'])->name('prestasi.store');
 
         Route::post('/siswa/naik-kelas', [SiswaController::class, 'naikKelasSiswa'])->name('siswa.naik-kelas');
+        Route::post('/siswa/naik-kelas/lewati', [SiswaController::class, 'lewatiNaikKelas'])->name('siswa.naik-kelas.lewati');
         Route::get('/siswa/profil', [SiswaController::class, 'profilEdit'])->name('siswa.profil');
         Route::post('/siswa/profil', [SiswaController::class, 'profilUpdate'])->name('siswa.profil.update');
     });
