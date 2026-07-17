@@ -48,7 +48,7 @@ return new class extends Migration
             $table->foreignId('siswa_id')->constrained()->cascadeOnDelete();
             $table->foreignId('periode_id')->constrained()->cascadeOnDelete();
             $table->string('nama_kegiatan');
-            $table->enum('tingkat', ['kota', 'provinsi', 'nasional', 'internasional']);
+            $table->enum('tingkat', ['kabupaten', 'provinsi', 'nasional', 'internasional']);
             $table->enum('peringkat', ['juara1', 'juara2', 'juara3']);
             $table->date('tanggal');
             $table->string('sertifikat_path')->nullable();

@@ -22,7 +22,9 @@ class RegisteredUserController extends Controller
      */
     public function create(): View
     {
-        return view('auth.register');
+        $kelas = \App\Models\Kelas::orderBy('urutan')->get();
+
+        return view('auth.register', compact('kelas'));
     }
 
     /**

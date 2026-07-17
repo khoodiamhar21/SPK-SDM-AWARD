@@ -43,22 +43,7 @@
                                 @endif
                             </td>
                             <td class="px-4 py-3">
-                                @if($p->status_validasi == 'menunggu')
-                                    <div class="flex gap-2">
-                                        <form method="POST" action="{{ route('panel.prestasi.validasi', $p) }}">
-                                            @csrf
-                                            <input type="hidden" name="status_validasi" value="valid">
-                                            <button class="px-3 py-1 rounded-lg bg-text-blue-600 text-white text-xs hover:bg-text-blue-600">Valid</button>
-                                        </form>
-                                        <form method="POST" action="{{ route('panel.prestasi.validasi', $p) }}">
-                                            @csrf
-                                            <input type="hidden" name="status_validasi" value="ditolak">
-                                            <button class="px-3 py-1 rounded-lg bg-rose-500 text-white text-xs hover:bg-rose-600">Tolak</button>
-                                        </form>
-                                    </div>
-                                @else
-                                    <span class="text-xs text-slate-400">-</span>
-                                @endif
+                                <a href="{{ route('panel.prestasi.show', $p) }}" class="text-blue-600 hover:underline text-xs font-medium">Detail</a>
                             </td>
                         </tr>
                     @empty

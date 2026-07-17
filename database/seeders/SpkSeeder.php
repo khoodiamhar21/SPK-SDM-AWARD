@@ -6,6 +6,7 @@ use App\Models\Bobot;
 use App\Models\Kriteria;
 use App\Models\Periode;
 use App\Models\Prestasi;
+use App\Models\Rubrik;
 use App\Models\Siswa;
 use App\Models\User;
 use Illuminate\Database\Seeder;
@@ -54,31 +55,44 @@ class SpkSeeder extends Seeder
             ['nama' => 'SDM Award 2025/2026', 'tgl_buka' => '2025-01-01', 'tgl_tutup' => '2025-12-31', 'aktif' => true]
         );
 
-        // ===== KRITERIA & BOBOT =====
-        $c1 = Kriteria::firstOrCreate(['kode' => 'C1'], ['nama' => 'Tingkat Kejuaraan', 'keterangan' => 'kota/prov/nas/internasional']);
-        $c2 = Kriteria::firstOrCreate(['kode' => 'C2'], ['nama' => 'Peringkat Juara', 'keterangan' => 'juara 1/2/3']);
-        Bobot::firstOrCreate(['kriteria_id' => $c1->id, 'periode_id' => $periode->id], ['bobot' => 0.6]);
-        Bobot::firstOrCreate(['kriteria_id' => $c2->id, 'periode_id' => $periode->id], ['bobot' => 0.4]);
+        // ===== KRITERIA & BOBOT (SAW - tingkat kejuaraan) =====
+        $c1 = Kriteria::firstOrCreate(['kode' => 'C1'], ['nama' => 'Tingkat Nasional', 'keterangan' => 'bobot 0.5']);
+        $c2 = Kriteria::firstOrCreate(['kode' => 'C2'], ['nama' => 'Tingkat Provinsi', 'keterangan' => 'bobot 0.3']);
+        $c3 = Kriteria::firstOrCreate(['kode' => 'C3'], ['nama' => 'Tingkat Kabupaten/Kota', 'keterangan' => 'bobot 0.2']);
+        Bobot::firstOrCreate(['kriteria_id' => $c1->id, 'periode_id' => $periode->id], ['bobot' => 0.5]);
+        Bobot::firstOrCreate(['kriteria_id' => $c2->id, 'periode_id' => $periode->id], ['bobot' => 0.3]);
+        Bobot::firstOrCreate(['kriteria_id' => $c3->id, 'periode_id' => $periode->id], ['bobot' => 0.2]);
+
+        // ===== RUBRIK (dari Panduan Penilaian SDM Award) =====
+        $this->call(RubrikSeeder::class);
 
         // ===== DATA PRESTASI CONTOH =====
+        // [siswa, kegiatan, tingkat, peringkat, penyelenggara, jenis, tgl, status]
         $seed = [
-            [$siswa,  'OSN Matematika',     'nasional',     'juara1', '2025-06-10', 'valid'],
-            [$siswa,  'Festival Seni',       'provinsi',     'juara2', '2025-08-15', 'valid'],
-            [$siswa2, 'Olimpiade Sains',     'internasional','juara3', '2025-09-20', 'valid'],
-            [$siswa2, 'Lomba Tahfidz',       'kota',         'juara1', '2025-03-05', 'menunggu'],
-            [$siswa3, 'Lomba Pidato',        'provinsi',     'juara1', '2025-07-12', 'valid'],
-            [$siswa3, 'MTQ Tingkat Kota',    'kota',         'juara2', '2025-04-18', 'valid'],
-            [$siswa4, 'Lomba Melukis',       'nasional',     'juara2', '2025-10-01', 'valid'],
-            [$siswa4, 'Lomba Menyanyi',      'provinsi',     'juara3', '2025-05-22', 'menunggu'],
-            [$siswa5, 'Olympiade IPS',       'nasional',     'juara1', '2025-11-03', 'valid'],
-            [$siswa5, 'Lomba Basket',        'kota',         'juara1', '2025-02-14', 'valid'],
+            [$siswa,  'OSN Matematika',     'nasional',     'juara1', 'pemerintah', 'perorangan', '2025-06-10', 'valid'],
+            [$siswa,  'Festival Seni',       'provinsi',     'juara2', 'pemerintah', 'perorangan', '2025-08-15', 'valid'],
+            [$siswa2, 'Olimpiade Sains',     'nasional',     'juara3', 'pemerintah', 'perorangan', '2025-09-20', 'valid'],
+            [$siswa2, 'Lomba Tahfidz',       'kabupaten',    'juara1', 'pemerintah', 'perorangan', '2025-03-05', 'menunggu'],
+            [$siswa3, 'Lomba Pidato',        'provinsi',     'juara1', 'pemerintah', 'perorangan', '2025-07-12', 'valid'],
+            [$siswa3, 'MTQ Tingkat Kota',    'kabupaten',    'juara2', 'pemerintah', 'perorangan', '2025-04-18', 'valid'],
+            [$siswa4, 'Lomba Melukis',       'nasional',     'juara2', 'swasta',     'perorangan', '2025-10-01', 'valid'],
+            [$siswa4, 'Lomba Menyanyi',      'provinsi',     'juara3', 'swasta',     'perorangan', '2025-05-22', 'menunggu'],
+            [$siswa5, 'Olympiade IPS',       'nasional',     'juara1', 'pemerintah', 'beregu',    '2025-11-03', 'valid'],
+            [$siswa5, 'Lomba Basket',        'kabupaten',    'juara1', 'swasta',     'beregu',    '2025-02-14', 'valid'],
         ];
 
-        foreach ($seed as [$s, $keg, $tk, $pr, $tgl, $st]) {
-            Prestasi::firstOrCreate(
+        foreach ($seed as [$s, $keg, $tk, $pr, $peny, $jenis, $tgl, $st]) {
+            $p = Prestasi::firstOrCreate(
                 ['siswa_id' => $s->id, 'nama_kegiatan' => $keg],
-                ['periode_id' => $periode->id, 'tingkat' => $tk, 'peringkat' => $pr, 'tanggal' => $tgl, 'status_validasi' => $st]
+                [
+                    'periode_id' => $periode->id, 'tingkat' => $tk, 'peringkat' => $pr,
+                    'penyelenggara' => $peny, 'jenis' => $jenis,
+                    'tanggal' => $tgl, 'status_validasi' => $st,
+                ]
             );
+            if ($p->nilai_rubrik === null) {
+                $p->isiNilaiRubrik();
+            }
         }
     }
 }

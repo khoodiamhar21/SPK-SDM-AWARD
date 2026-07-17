@@ -12,13 +12,14 @@ class PrestasiController extends Controller
 {
     public function index(Request $request)
     {
+        if ($request->user()->isSiswa()) {
+            return $this->statusSeleksi($request);
+        }
+
         $periodeId = $request->get('periode_id');
         $query = Prestasi::with(['siswa', 'periode'])->latest();
 
-        if ($request->user()->isSiswa()) {
-            $siswa = $request->user()->siswa;
-            $query->where('siswa_id', $siswa?->id);
-        } elseif ($periodeId) {
+        if ($periodeId) {
             $query->where('periode_id', $periodeId);
         }
 
@@ -26,6 +27,22 @@ class PrestasiController extends Controller
         $periodes = Periode::orderByDesc('tahun')->get();
 
         return view('panel.prestasi-index', compact('prestasis', 'periodes', 'periodeId'));
+    }
+
+    public function statusSeleksi(Request $request)
+    {
+        $siswa = $request->user()->siswa;
+        $periodeAktif = Periode::where('aktif', true)->first();
+        $prestasis = $siswa
+            ? $siswa->prestasis()->with('periode')->latest()->get()
+            : collect();
+
+        $ranking = $periodeAktif ? (new \App\Services\SawService())->hitung($periodeAktif) : collect();
+        $posisi = $ranking->firstWhere('siswa.id', $siswa?->id);
+        $peringkat = $posisi ? $posisi['peringkat'] : null;
+        $nilai = $posisi ? $posisi['total_vi'] : null;
+
+        return view('siswa.status-seleksi', compact('prestasis', 'periodeAktif', 'peringkat', 'nilai', 'ranking'));
     }
 
     public function create(Request $request)
@@ -43,8 +60,10 @@ class PrestasiController extends Controller
         $data = $request->validate([
             'periode_id' => 'required|exists:periodes,id',
             'nama_kegiatan' => 'required|string|max:255',
-            'tingkat' => 'required|in:kota,provinsi,nasional,internasional',
+            'tingkat' => 'required|in:kabupaten,provinsi,nasional,internasional',
             'peringkat' => 'required|in:juara1,juara2,juara3',
+            'penyelenggara' => 'required|in:pemerintah,swasta',
+            'jenis' => 'required|in:perorangan,beregu',
             'tanggal' => 'required|date',
             'sertifikat' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:2048',
             'catatan' => 'nullable|string',
@@ -70,6 +89,8 @@ class PrestasiController extends Controller
             'nama_kegiatan' => $data['nama_kegiatan'],
             'tingkat' => $data['tingkat'],
             'peringkat' => $data['peringkat'],
+            'penyelenggara' => $data['penyelenggara'],
+            'jenis' => $data['jenis'],
             'tanggal' => $data['tanggal'],
             'sertifikat_path' => $path,
             'catatan' => $data['catatan'] ?? null,
@@ -88,6 +109,37 @@ class PrestasiController extends Controller
 
         $prestasi->update($data);
 
+        if ($data['status_validasi'] === 'valid') {
+            $prestasi->isiNilaiRubrik();
+        } else {
+            $prestasi->nilai_rubrik = null;
+            $prestasi->save();
+        }
+
         return back()->with('status', 'Status prestasi diperbarui.');
+    }
+
+    public function show(Prestasi $prestasi)
+    {
+        $prestasi->load(['siswa', 'periode']);
+
+        // Nilai rubrik otomatis berdasarkan kombinasi kriteria
+        $skorRubrik = \App\Models\Rubrik::cariSkor(
+            $prestasi->penyelenggara,
+            $prestasi->peringkat,
+            $prestasi->jenis,
+            $prestasi->tingkat
+        );
+
+        return view('panel.prestasi-show', compact('prestasi', 'skorRubrik'));
+    }
+
+    public function dokumen(Prestasi $prestasi)
+    {
+        if (! $prestasi->sertifikat_path || ! Storage::disk('local')->exists($prestasi->sertifikat_path)) {
+            abort(404);
+        }
+
+        return response()->file(Storage::disk('local')->path($prestasi->sertifikat_path));
     }
 }

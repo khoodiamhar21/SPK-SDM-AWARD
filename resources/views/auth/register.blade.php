@@ -2,18 +2,30 @@
     <form method="POST" action="{{ route('register') }}">
         @csrf
 
-        <!-- Name -->
+        <!-- NISN -->
         <div>
-            <x-input-label for="name" :value="__('Name')" />
-            <x-text-input id="name" class="block mt-1 w-full" type="text" name="name" :value="old('name')" required autofocus autocomplete="name" />
+            <x-input-label for="nisn" :value="__('NISN')" />
+            <x-text-input id="nisn" class="block mt-1 w-full" type="text" name="nisn" :value="old('nisn')" required autofocus />
+            <x-input-error :messages="$errors->get('nisn')" class="mt-2" />
+        </div>
+
+        <!-- Name -->
+        <div class="mt-4">
+            <x-input-label for="name" :value="__('Nama Lengkap')" />
+            <x-text-input id="name" class="block mt-1 w-full" type="text" name="name" :value="old('name')" required autocomplete="name" />
             <x-input-error :messages="$errors->get('name')" class="mt-2" />
         </div>
 
-        <!-- Email Address -->
+        <!-- Kelas -->
         <div class="mt-4">
-            <x-input-label for="email" :value="__('Email')" />
-            <x-text-input id="email" class="block mt-1 w-full" type="email" name="email" :value="old('email')" required autocomplete="username" />
-            <x-input-error :messages="$errors->get('email')" class="mt-2" />
+            <x-input-label for="kelas_id" :value="__('Kelas')" />
+            <select id="kelas_id" name="kelas_id" class="block mt-1 w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500" required>
+                <option value="">-- Pilih Kelas --</option>
+                @foreach ($kelas as $k)
+                    <option value="{{ $k->id }}" {{ old('kelas_id') == $k->id ? 'selected' : '' }}>{{ $k->nama }}</option>
+                @endforeach
+            </select>
+            <x-input-error :messages="$errors->get('kelas_id')" class="mt-2" />
         </div>
 
         <!-- Password -->

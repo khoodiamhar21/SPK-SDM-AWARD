@@ -18,7 +18,7 @@
                     <x-input-label for="tingkat" value="Tingkat Kejuaraan" />
                     <select id="tingkat" name="tingkat" class="mt-1 block w-full rounded-md border-slate-300" required>
                         <option value="">-- Pilih --</option>
-                        <option value="kota">Kota/Kabupaten</option>
+                        <option value="kabupaten">Kabupaten/Kota</option>
                         <option value="provinsi">Provinsi</option>
                         <option value="nasional">Nasional</option>
                         <option value="internasional">Internasional</option>
@@ -35,6 +35,26 @@
                     </select>
                     <x-input-error :messages="$errors->get('peringkat')" class="mt-2" />
                 </div>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                    <x-input-label for="penyelenggara" value="Jenis Penyelenggara" />
+                    <select id="penyelenggara" name="penyelenggara" class="mt-1 block w-full rounded-md border-slate-300" required>
+                        <option value="">-- Pilih --</option>
+                        <option value="pemerintah">Instansi Pemerintahan</option>
+                        <option value="swasta">Instansi Swasta</option>
+                    </select>
+                    <x-input-error :messages="$errors->get('penyelenggara')" class="mt-2" />
+                </div>
+                <div>
+                    <x-input-label for="jenis" value="Jenis Prestasi" />
+                    <select id="jenis" name="jenis" class="mt-1 block w-full rounded-md border-slate-300" required>
+                        <option value="">-- Pilih --</option>
+                        <option value="perorangan">Perorangan</option>
+                        <option value="beregu">Beregu</option>
+                    </select>
+                    <x-input-error :messages="$errors->get('jenis')" class="mt-2" />
             </div>
 
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">

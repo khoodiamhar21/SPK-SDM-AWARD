@@ -4,102 +4,137 @@ namespace App\Services;
 
 use App\Models\Periode;
 use App\Models\Prestasi;
+use App\Models\Siswa;
 use Illuminate\Support\Collection;
 
 /**
  * Simple Additive Weighting (SAW) untuk SDM Award.
- * Konversi: tingkat (kota=1, provinsi=2, nasional=3, internasional=4)
- *           peringkat (juara1=3, juara2=2, juara3=1)
- * Hanya prestasi berstatus 'valid' & dalam periode yang dihitung.
+ *
+ * Alur: Rubrik -> nilai per prestasi (40-100) -> akumulasi per tingkat kejuaraan
+ *       dengan bobot (Nasional 0.5, Provinsi 0.3, Kab/Kota 0.2) -> 1 nilai siswa
+ *       -> SAW ranking.
+ *
+ * Kriteria SAW = tingkat kejuaraan (C1=Nasional, C2=Provinsi, C3=Kab/Kota),
+ * masing-masing benefit, dibobot sesuai panduan penilaian.
  */
 class SawService
 {
-    public const TINGKAT_SKALA = [
-        'kota' => 1,
-        'provinsi' => 2,
-        'nasional' => 3,
-        'internasional' => 4,
+    public const BOBOT_TINGKAT = [
+        'nasional' => 0.5,
+        'provinsi' => 0.3,
+        'kabupaten' => 0.2,
     ];
 
-    public const PERINGKAT_SKALA = [
-        'juara1' => 3,
-        'juara2' => 2,
-        'juara3' => 1,
+    public const TINGKAT_KE_KRITERIA = [
+        'nasional' => 'C1',
+        'provinsi' => 'C2',
+        'kabupaten' => 'C3',
     ];
-
-    public static function skalaTingkat(string $tingkat): int
-    {
-        return self::TINGKAT_SKALA[$tingkat] ?? 0;
-    }
-
-    public static function skalaPeringkat(string $peringkat): int
-    {
-        return self::PERINGKAT_SKALA[$peringkat] ?? 0;
-    }
 
     /**
      * Hitung SAW untuk satu periode.
-     * @return Collection hasil peringkat: [{siswa, total_vi, detail: [{prestasi, x, rnorm, w, kontrib}]}]
+     * @return Collection [{siswa, nilai_akhir, detail, jumlah_prestasi}]
      */
     public function hitung(Periode $periode): Collection
     {
-        $bobots = $periode->bobots()->with('kriteria')->get();
         $prestasis = Prestasi::with('siswa')
             ->where('periode_id', $periode->id)
             ->where('status_validasi', 'valid')
             ->get();
 
-        // Kelompokkan per siswa
         $perSiswa = $prestasis->groupBy('siswa_id');
 
-        // Matriks X per kriteria (satu baris per siswa, agregat = sum skala prestasi)
-        $matriksX = [];      // [siswa_id][kriteria_kode] = sum
+        // Matriks X: [siswa_id][C1/C2/C3] = sum nilai_rubrik per tingkat
+        $matriksX = [];
         $metaSiswa = [];
         foreach ($perSiswa as $siswaId => $items) {
-            $siswa = $items->first()->siswa;
-            $metaSiswa[$siswaId] = $siswa;
-            foreach (['tingkat' => 'C1', 'peringkat' => 'C2'] as $field => $kode) {
-                $sum = $items->sum(function ($p) use ($field) {
-                    return $field === 'tingkat'
-                        ? self::skalaTingkat($p->tingkat)
-                        : self::skalaPeringkat($p->peringkat);
-                });
-                $matriksX[$siswaId][$kode] = $sum;
+            $metaSiswa[$siswaId] = $items->first()->siswa;
+            $row = ['C1' => 0, 'C2' => 0, 'C3' => 0];
+            foreach ($items as $p) {
+                $kode = self::TINGKAT_KE_KRITERIA[$p->tingkat] ?? null;
+                if (! $kode) {
+                    continue;
+                }
+                $row[$kode] += (float) ($p->nilai_rubrik ?? 0);
             }
+            $matriksX[$siswaId] = $row;
         }
 
-        // Normalisasi (semua kriteria bersifat benefit => nilai/max)
+        // Normalisasi (benefit => nilai / max)
         $maxPerKriteria = [];
-        foreach (['C1', 'C2'] as $kode) {
-            $maxPerKriteria[$kode] = collect($matriksX)->max(fn ($row) => $row[$kode] ?? 0) ?: 1;
+        foreach (['C1', 'C2', 'C3'] as $kode) {
+            $maxPerKriteria[$kode] = collect($matriksX)->max(fn ($r) => $r[$kode] ?? 0) ?: 1;
         }
 
         $hasil = [];
         foreach ($matriksX as $siswaId => $row) {
             $totalVi = 0;
             $detail = [];
-            foreach (['C1', 'C2'] as $kode) {
-                $bobot = $bobots->firstWhere('kriteria.kode', $kode);
-                $w = $bobot ? (float) $bobot->bobot : 0;
+            foreach (['C1', 'C2', 'C3'] as $kode) {
+                $w = self::bobotKriteria($kode);
                 $x = $row[$kode] ?? 0;
                 $rnorm = $maxPerKriteria[$kode] ? $x / $maxPerKriteria[$kode] : 0;
                 $kontrib = $rnorm * $w;
                 $totalVi += $kontrib;
                 $detail[$kode] = [
-                    'x' => $x,
+                    'x' => round($x, 2),
                     'rnorm' => round($rnorm, 4),
                     'w' => $w,
                     'kontrib' => round($kontrib, 4),
                 ];
             }
+            // nilai akhir berbobot sesuai panduan (0.5*N + 0.3*P + 0.2*K)
+            $nilaiAkhir = (float) ($row['C1'] * self::BOBOT_TINGKAT['nasional']
+                + $row['C2'] * self::BOBOT_TINGKAT['provinsi']
+                + $row['C3'] * self::BOBOT_TINGKAT['kabupaten']);
+
             $hasil[] = [
                 'siswa' => $metaSiswa[$siswaId],
                 'total_vi' => round($totalVi, 4),
+                'nilai_akhir' => round($nilaiAkhir, 2),
                 'detail' => $detail,
                 'jumlah_prestasi' => count($perSiswa[$siswaId]),
             ];
         }
 
-        return collect($hasil)->sortByDesc('total_vi')->values();
+        $hasil = collect($hasil)->sortByDesc('nilai_akhir')->values();
+
+        $hasil->transform(function ($item, $i) {
+            $item['peringkat'] = $i + 1;
+
+            return $item;
+        });
+
+        return $hasil;
+    }
+
+    protected static function bobotKriteria(string $kode): float
+    {
+        return match ($kode) {
+            'C1' => self::BOBOT_TINGKAT['nasional'],
+            'C2' => self::BOBOT_TINGKAT['provinsi'],
+            'C3' => self::BOBOT_TINGKAT['kabupaten'],
+            default => 0,
+        };
+    }
+
+    /**
+     * Hitung nilai sementara SAW untuk SATU siswa (on-the-fly).
+     */
+    public function hitungSiswa(Periode $periode, Siswa $siswa): ?array
+    {
+        $ranking = $this->hitung($periode);
+        $item = $ranking->firstWhere('siswa.id', $siswa->id);
+
+        if (! $item) {
+            return null;
+        }
+
+        return [
+            'total_vi' => $item['total_vi'],
+            'nilai_akhir' => $item['nilai_akhir'],
+            'peringkat' => $item['peringkat'],
+            'jumlah_prestasi' => $item['jumlah_prestasi'],
+        ];
     }
 }

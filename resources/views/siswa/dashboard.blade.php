@@ -16,6 +16,15 @@
             <div class="text-sm text-slate-500">Periode</div>
             <div class="text-sm font-semibold">{{ $periodeAktif->nama ?? '-' }}</div>
         </div>
+        <div class="bg-gradient-to-br from-blue-600 to-sky-500 rounded-xl shadow-sm p-5 border text-white">
+            <div class="text-sm text-blue-50">Nilai Sementara (SAW)</div>
+            @if($nilaiSementara)
+                <div class="text-2xl font-bold">{{ number_format($nilaiSementara['total_vi'], 4) }}</div>
+                <div class="text-[11px] text-blue-50/90 mt-1">Peringkat sementara #{{ $nilaiSementara['peringkat'] }} · {{ $nilaiSementara['jumlah_prestasi'] }} prestasi valid</div>
+            @else
+                <div class="text-lg font-semibold opacity-90">Belum ada prestasi valid</div>
+            @endif
+        </div>
     </div>
 
     <div class="flex justify-between items-center mb-3">
