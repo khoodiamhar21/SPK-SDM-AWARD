@@ -49,11 +49,11 @@
                         <x-icon name="user" class="h-5 w-5 shrink-0" />
                         <span x-show="!collapsed" x-cloak>Daftar Siswa</span>
                     </a>
-                    <a href="{{ route('panel.validasi.index') }}" title="Validasi Sertifikat" class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-white/10 {{ request()->routeIs('panel.validasi.*') ? 'bg-white/15 font-semibold' : '' }}">
+                    <a href="{{ route('panel.validasi.kelas') }}" title="Validasi Sertifikat" class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-white/10 {{ request()->routeIs('panel.validasi.*') ? 'bg-white/15 font-semibold' : '' }}">
                         <x-icon name="doc" class="h-5 w-5 shrink-0" />
                         <span x-show="!collapsed" x-cloak>Validasi Sertifikat</span>
                     </a>
-                    <a href="{{ route('panel.penilaian.index') }}" title="Penilaian" class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-white/10 {{ request()->routeIs('panel.penilaian.*') ? 'bg-white/15 font-semibold' : '' }}">
+                    <a href="{{ route('panel.penilaian.kelas') }}" title="Penilaian" class="nav-link flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-white/10 {{ request()->routeIs('panel.penilaian.*') ? 'bg-white/15 font-semibold' : '' }}">
                         <x-icon name="scale" class="h-5 w-5 shrink-0" />
                         <span x-show="!collapsed" x-cloak>Penilaian</span>
                     </a>

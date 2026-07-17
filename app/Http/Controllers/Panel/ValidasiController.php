@@ -3,12 +3,42 @@
 namespace App\Http\Controllers\Panel;
 
 use App\Http\Controllers\Controller;
+use App\Models\Kelas;
 use App\Models\Periode;
 use App\Models\Prestasi;
+use App\Models\Siswa;
 use Illuminate\Http\Request;
 
 class ValidasiController extends Controller
 {
+    // VALIDASI BERJENJANG: Kelas -> Siswa -> Prestasi
+    public function kelas()
+    {
+        $kelas = Kelas::orderBy('urutan')->get();
+        $periode = Periode::where('aktif', true)->first();
+
+        return view('panel.validasi-kelas', compact('kelas', 'periode'));
+    }
+
+    public function siswa(Kelas $kelas)
+    {
+        $periode = Periode::where('aktif', true)->first();
+        $siswas = Siswa::where('kelas_id', $kelas->id)
+            ->whereHas('prestasis', fn ($q) => $q->where('periode_id', $periode?->id))
+            ->withCount(['prestasis' => fn ($q) => $q->where('periode_id', $periode?->id)])
+            ->orderBy('nama')->get();
+
+        return view('panel.validasi-siswa', compact('kelas', 'siswas', 'periode'));
+    }
+
+    public function prestasi(Siswa $siswa)
+    {
+        $periode = Periode::where('aktif', true)->first();
+        $prestasis = $siswa->prestasis()->where('periode_id', $periode?->id)->latest()->get();
+
+        return view('panel.validasi-prestasi', compact('siswa', 'prestasis', 'periode'));
+    }
+
     public function index(Request $request)
     {
         $periode = Periode::where('aktif', true)->first();
