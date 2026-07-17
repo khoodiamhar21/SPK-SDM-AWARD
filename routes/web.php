@@ -39,25 +39,25 @@ Route::middleware('auth')->group(function () {
         Route::get('/panel/prestasi/{prestasi}', [PrestasiController::class, 'show'])->name('panel.prestasi.show');
         Route::get('/panel/prestasi/{prestasi}/dokumen', [PrestasiController::class, 'dokumen'])->name('panel.prestasi.dokumen');
 
+        // Validasi berjenjang: Kelas -> Siswa -> Prestasi (declared BEFORE {prestasi} wildcard)
+        Route::get('/panel/validasi/kelas', [ValidasiController::class, 'kelas'])->name('panel.validasi.kelas');
+        Route::get('/panel/validasi/kelas/{kelas}', [ValidasiController::class, 'siswa'])->name('panel.validasi.siswa');
+        Route::get('/panel/validasi/siswa/{siswa}', [ValidasiController::class, 'prestasi'])->name('panel.validasi.prestasi');
+
         // Validasi Sertifikat (cek berkas)
         Route::get('/panel/validasi', [ValidasiController::class, 'index'])->name('panel.validasi.index');
         Route::get('/panel/validasi/{prestasi}', [ValidasiController::class, 'show'])->name('panel.validasi.show');
         Route::post('/panel/validasi/{prestasi}/putusan', [ValidasiController::class, 'putusan'])->name('panel.validasi.putusan');
 
-        // Validasi berjenjang: Kelas -> Siswa -> Prestasi
-        Route::get('/panel/validasi/kelas', [ValidasiController::class, 'kelas'])->name('panel.validasi.kelas');
-        Route::get('/panel/validasi/kelas/{kelas}', [ValidasiController::class, 'siswa'])->name('panel.validasi.siswa');
-        Route::get('/panel/validasi/siswa/{siswa}', [ValidasiController::class, 'prestasi'])->name('panel.validasi.prestasi');
+        // Penilaian berjenjang: Kelas -> Siswa -> Prestasi (declared BEFORE {prestasi} wildcard)
+        Route::get('/panel/penilaian/kelas', [PenilaianController::class, 'kelas'])->name('panel.penilaian.kelas');
+        Route::get('/panel/penilaian/kelas/{kelas}', [PenilaianController::class, 'siswa'])->name('panel.penilaian.siswa');
+        Route::get('/panel/penilaian/siswa/{siswa}', [PenilaianController::class, 'prestasi'])->name('panel.penilaian.prestasi');
 
         // Penilaian (input nilai rubrik)
         Route::get('/panel/penilaian', [PenilaianController::class, 'index'])->name('panel.penilaian.index');
         Route::get('/panel/penilaian/{prestasi}', [PenilaianController::class, 'show'])->name('panel.penilaian.show');
         Route::post('/panel/penilaian/{prestasi}/nilai', [PenilaianController::class, 'nilai'])->name('panel.penilaian.nilai');
-
-        // Penilaian berjenjang: Kelas -> Siswa -> Prestasi
-        Route::get('/panel/penilaian/kelas', [PenilaianController::class, 'kelas'])->name('panel.penilaian.kelas');
-        Route::get('/panel/penilaian/kelas/{kelas}', [PenilaianController::class, 'siswa'])->name('panel.penilaian.siswa');
-        Route::get('/panel/penilaian/siswa/{siswa}', [PenilaianController::class, 'prestasi'])->name('panel.penilaian.prestasi');
 
         // Rekap Penilaian
         Route::get('/panel/rekap', [RekapController::class, 'index'])->name('panel.rekap.index');
