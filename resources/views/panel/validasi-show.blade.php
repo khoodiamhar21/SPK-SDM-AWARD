@@ -16,22 +16,37 @@
                 <div><dt class="text-slate-400">Kegiatan</dt><dd class="font-semibold">{{ $prestasi->nama_kegiatan }}</dd></div>
                 <div><dt class="text-slate-400">Tingkat</dt><dd class="font-semibold capitalize">{{ $prestasi->tingkat }}</dd></div>
                 <div><dt class="text-slate-400">Peringkat</dt><dd class="font-semibold">{{ str_replace('juara','Juara ',$prestasi->peringkat) }}</dd></div>
-                <div><dt class="text-slate-400">Penyelenggara</dt><dd class="font-semibold capitalize">{{ $prestasi->penyelenggara }}</dd></div>
+                <div><dt class="text-slate-400">Kategori Lomba</dt><dd class="font-semibold capitalize">{{ $prestasi->kategoriLomba?->nama ?? '-' }}</dd></div>
                 <div><dt class="text-slate-400">Jenis</dt><dd class="font-semibold capitalize">{{ $prestasi->jenis }}</dd></div>
                 <div><dt class="text-slate-400">Tanggal</dt><dd class="font-semibold">{{ $prestasi->tanggal->format('d M Y') }}</dd></div>
             </dl>
 
-            <form method="POST" action="{{ route('panel.validasi.putusan', $prestasi) }}" class="mt-6 space-y-3">
-                @csrf
-                <div>
-                    <label class="block text-sm font-medium text-slate-700 mb-1">Catatan (opsional)</label>
-                    <textarea name="catatan" rows="2" class="w-full rounded-xl border-slate-300 text-sm">{{ $prestasi->catatan }}</textarea>
+            @if($prestasi->status_validasi === 'menunggu')
+                <form method="POST" action="{{ route('panel.validasi.putusan', $prestasi) }}" class="mt-6 space-y-3">
+                    @csrf
+                    <div>
+                        <label class="block text-sm font-medium text-slate-700 mb-1">Catatan (opsional)</label>
+                        <textarea name="catatan" rows="2" class="w-full rounded-xl border border-slate-300 text-sm px-3 py-2">{{ $prestasi->catatan }}</textarea>
+                    </div>
+                    <div class="flex gap-3">
+                        <button name="status_validasi" value="valid" class="px-4 py-2 rounded-xl bg-emerald-600 text-white text-sm font-semibold hover:bg-emerald-700">✓ Lolos Validasi</button>
+                        <button name="status_validasi" value="ditolak" class="px-4 py-2 rounded-xl bg-rose-500 text-white text-sm font-semibold hover:bg-rose-600">✕ Tolak</button>
+                    </div>
+                </form>
+            @else
+                <div class="mt-6 p-4 rounded-xl {{ $prestasi->status_validasi === 'valid' ? 'bg-emerald-50 border border-emerald-200' : 'bg-rose-50 border border-rose-200' }}">
+                    <div class="flex items-center gap-2">
+                        @if($prestasi->status_validasi === 'valid')
+                            <span class="px-3 py-1 rounded-full bg-emerald-100 text-emerald-700 text-xs font-semibold">✓ Lolos Validasi</span>
+                        @else
+                            <span class="px-3 py-1 rounded-full bg-rose-100 text-rose-700 text-xs font-semibold">✕ Ditolak</span>
+                        @endif
+                    </div>
+                    @if($prestasi->catatan)
+                        <p class="text-sm text-slate-600 mt-2">{{ $prestasi->catatan }}</p>
+                    @endif
                 </div>
-                <div class="flex gap-3">
-                    <button name="status_validasi" value="valid" class="px-4 py-2 rounded-xl bg-emerald-600 text-white text-sm font-semibold hover:bg-emerald-700">✓ Lolos Validasi</button>
-                    <button name="status_validasi" value="ditolak" class="px-4 py-2 rounded-xl bg-rose-500 text-white text-sm font-semibold hover:bg-rose-600">✕ Tolak</button>
-                </div>
-            </form>
+            @endif
         </div>
 
         <div class="bg-white rounded-2xl shadow-sm border p-6">

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use App\Traits\LogsActivity;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules;
@@ -10,6 +11,7 @@ use Illuminate\View\View;
 
 class UserController extends Controller
 {
+    use LogsActivity;
     public function index()
     {
         $users = User::orderBy('role')->orderBy('name')->get();
@@ -26,16 +28,19 @@ class UserController extends Controller
         $data = $request->validate([
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
-            'password' => ['required', 'confirmed', Rules\Password::defaults()],
-            'role' => ['required', 'in:panitia,wakasiswa,siswa'],
+            'password' => ['required', 'confirmed', Rules\Password::min(8)->letters()->mixedCase()->numbers()],
+            'role' => ['required', 'in:panitia,validator,wakasiswa,siswa'],
         ]);
 
-        User::create([
+        $user = new User([
             'name' => $data['name'],
             'email' => $data['email'],
             'password' => Hash::make($data['password']),
-            'role' => $data['role'],
         ]);
+        $user->role = $data['role'];
+        $user->save();
+
+        $this->log('create_user', "Buat akun {$data['role']}: {$data['name']} ({$data['email']})", $user);
 
         return redirect()->route('panel.akun.index')->with('status', 'Akun berhasil dibuat.');
     }
@@ -50,8 +55,8 @@ class UserController extends Controller
         $data = $request->validate([
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class.',email,'.$user->id],
-            'password' => ['nullable', 'confirmed', Rules\Password::defaults()],
-            'role' => ['required', 'in:panitia,wakasiswa,siswa'],
+            'password' => ['nullable', 'confirmed', Rules\Password::min(8)->letters()->mixedCase()->numbers()],
+            'role' => ['required', 'in:panitia,validator,wakasiswa,siswa'],
         ]);
 
         $user->name = $data['name'];
@@ -62,6 +67,8 @@ class UserController extends Controller
         }
         $user->save();
 
+        $this->log('update_user', "Update akun {$data['role']}: {$data['name']} ({$data['email']})", $user);
+
         return redirect()->route('panel.akun.index')->with('status', 'Akun berhasil diperbarui.');
     }
 
@@ -70,6 +77,8 @@ class UserController extends Controller
         if ($user->id === auth()->id()) {
             return back()->withErrors(['msg' => 'Tidak bisa menghapus akun sendiri.']);
         }
+
+        $this->log('delete_user', "Hapus akun {$user->role}: {$user->name} ({$user->email})", $user);
 
         $user->delete();
 

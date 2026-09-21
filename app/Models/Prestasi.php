@@ -5,11 +5,12 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
+/** @mixin \Illuminate\Database\Eloquent\Builder */
 class Prestasi extends Model
 {
     protected $fillable = [
         'siswa_id', 'periode_id', 'nama_kegiatan', 'tingkat',
-        'peringkat', 'penyelenggara', 'jenis', 'nilai_rubrik',
+        'peringkat', 'kategori_lomba_id', 'jenis_prestasi', 'jenis', 'nilai_rubrik',
         'tanggal', 'sertifikat_path', 'status_validasi', 'catatan',
     ];
 
@@ -20,7 +21,7 @@ class Prestasi extends Model
 
     public function isiNilaiRubrik(): void
     {
-        $skor = Rubrik::cariSkor($this->penyelenggara, $this->peringkat, $this->jenis, $this->tingkat);
+        $skor = Rubrik::cariSkor($this->kategori_lomba_id, $this->peringkat, $this->jenis, $this->tingkat);
         $this->nilai_rubrik = $skor;
         $this->save();
     }
@@ -33,5 +34,10 @@ class Prestasi extends Model
     public function periode(): BelongsTo
     {
         return $this->belongsTo(Periode::class);
+    }
+
+    public function kategoriLomba(): BelongsTo
+    {
+        return $this->belongsTo(KategoriLomba::class);
     }
 }

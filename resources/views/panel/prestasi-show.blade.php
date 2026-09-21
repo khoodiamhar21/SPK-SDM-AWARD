@@ -19,7 +19,7 @@
                 <div><dt class="text-slate-400">Kegiatan</dt><dd class="font-semibold">{{ $prestasi->nama_kegiatan }}</dd></div>
                 <div><dt class="text-slate-400">Tingkat</dt><dd class="font-semibold capitalize">{{ $prestasi->tingkat }}</dd></div>
                 <div><dt class="text-slate-400">Peringkat</dt><dd class="font-semibold">{{ str_replace('juara','Juara ',$prestasi->peringkat) }}</dd></div>
-                <div><dt class="text-slate-400">Penyelenggara</dt><dd class="font-semibold capitalize">{{ $prestasi->penyelenggara }}</dd></div>
+                <div><dt class="text-slate-400">Kategori Lomba</dt><dd class="font-semibold capitalize">{{ $prestasi->kategoriLomba?->nama ?? '-' }}</dd></div>
                 <div><dt class="text-slate-400">Jenis Prestasi</dt><dd class="font-semibold capitalize">{{ $prestasi->jenis }}</dd></div>
                 <div><dt class="text-slate-400">Tanggal</dt><dd class="font-semibold">{{ $prestasi->tanggal->format('d M Y') }}</dd></div>
                 <div><dt class="text-slate-400">Periode</dt><dd class="font-semibold">{{ $prestasi->periode->nama ?? '-' }}</dd></div>

@@ -7,6 +7,6 @@ use Illuminate\Database\Eloquent\Model;
 class Pengumuman extends Model
 {
     protected $table = 'pengumumans';
-    protected $fillable = ['judul', 'isi', 'tanggal'];
-    protected $casts = ['tanggal' => 'date'];
+    protected $fillable = ['judul', 'isi', 'tanggal', 'data'];
+    protected $casts = ['tanggal' => 'date', 'data' => 'array'];
 }

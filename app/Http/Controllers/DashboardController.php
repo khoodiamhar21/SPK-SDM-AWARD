@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Pengumuman;
 use App\Models\Periode;
 use App\Models\Prestasi;
 use App\Models\Siswa;
@@ -21,15 +22,33 @@ class DashboardController extends Controller
             $nilaiSementara = ($siswa && $periodeAktif)
                 ? (new SawService())->hitungSiswa($periodeAktif, $siswa)
                 : null;
+
+            // Jika ranking sudah dihitung & divalidasi, tampilkan sebagai Nilai Perolehan
+            $nilaiPerolehan = null;
+            $rankingValid = SawService::rankingTervalidasi($periodeAktif);
+            if ($siswa && $rankingValid) {
+                $entri = SawService::entriSiswa($rankingValid, $siswa->id)->first();
+                if ($entri) {
+                    $nilaiPerolehan = [
+                        'kategori' => $entri['kategori'],
+                        'nilai_akhir' => $entri['nilai_akhir'],
+                        'peringkat' => $entri['peringkat'],
+                        'jumlah_prestasi' => $entri['jumlah_prestasi'],
+                    ];
+                }
+            }
+
             $showNaikKelas = session('show_naik_kelas', false);
-            return view('siswa.dashboard', compact('siswa', 'prestasis', 'periodeAktif', 'nilaiSementara', 'showNaikKelas'));
+            $pengumumans = Pengumuman::latest('tanggal')->take(3)->get();
+            return view('siswa.dashboard', compact('siswa', 'prestasis', 'periodeAktif', 'nilaiSementara', 'nilaiPerolehan', 'showNaikKelas', 'pengumumans'));
         }
 
-        // panitia / waka
+        // panitia / waka / validator
         if ($user->isWaka()) {
             return view('panel.dashboard-waka', compact('periodeAktif'));
         }
 
+        $isValidator = $user->isValidator();
         $totalSiswa = Siswa::count();
         $totalPrestasi = Prestasi::count();
         $menunggu = Prestasi::where('status_validasi', 'menunggu')->count();
@@ -69,6 +88,6 @@ class DashboardController extends Controller
                 ];
             });
 
-        return view('panel.dashboard', compact('totalSiswa', 'totalPrestasi', 'menunggu', 'ranking', 'periodeAktif', 'siswaList'));
+        return view('panel.dashboard', compact('totalSiswa', 'totalPrestasi', 'menunggu', 'ranking', 'periodeAktif', 'siswaList', 'isValidator'));
     }
 }

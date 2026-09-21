@@ -55,8 +55,8 @@ return new class extends Migration
         }
 
         // Ensure nisn uniqueness (idempotent).
-        $indexes = Illuminate\Support\Facades\DB::select("SHOW INDEX FROM siswas WHERE Key_name = 'siswas_nisn_unique'");
-        if (empty($indexes)) {
+        $sudahUnik = Illuminate\Support\Facades\Schema::hasIndex('siswas', 'siswas_nisn_unique');
+        if (! $sudahUnik) {
             Illuminate\Support\Facades\Schema::table('siswas', function (Blueprint $table) {
                 $table->unique('nisn', 'siswas_nisn_unique');
             });

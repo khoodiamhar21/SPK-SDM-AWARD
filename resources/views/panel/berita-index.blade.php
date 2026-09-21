@@ -1,53 +1,77 @@
 <x-app-layout>
-    <x-slot name="header"><h2 class="font-semibold text-xl text-slate-800">Kelola Berita</h2></x-slot>
-
-    <div class="grid lg:grid-cols-3 gap-6">
-        <div class="bg-white rounded-2xl shadow-sm border p-6">
-            <h3 class="font-semibold mb-4">Tambah Berita</h3>
-            <form method="POST" action="{{ route('panel.berita.store') }}" enctype="multipart/form-data" class="space-y-4">
-                @csrf
-                <div>
-                    <x-input-label for="judul" value="Judul" />
-                    <x-text-input id="judul" name="judul" class="mt-1 block w-full" required />
-                    <x-input-error :messages="$errors->get('judul')" class="mt-2" />
-                </div>
-                <div class="grid grid-cols-2 gap-3">
-                    <div>
-                        <x-input-label for="kategori" value="Kategori" />
-                        <x-text-input id="kategori" name="kategori" class="mt-1 block w-full" value="Prestasi" required />
-                    </div>
-                    <div>
-                        <x-input-label for="tanggal" value="Tanggal" />
-                        <x-text-input id="tanggal" type="date" name="tanggal" class="mt-1 block w-full" required />
-                    </div>
-                </div>
-                <div>
-                    <x-input-label for="isi" value="Isi (opsional)" />
-                    <textarea name="isi" rows="3" class="mt-1 block w-full rounded-md border-slate-300"></textarea>
-                </div>
-                <div>
-                    <x-input-label for="foto" value="Foto (opsional)" />
-                    <input type="file" name="foto" accept="image/*" class="mt-1 block w-full text-sm file:mr-3 file:py-2 file:px-4 file:rounded-lg file:border-0 file:bg-blue-50 file:text-blue-700">
-                </div>
-                <x-primary-button>Simpan</x-primary-button>
-            </form>
+    <div class="flex items-center justify-between mb-6">
+        <div>
+            <h1 class="text-xl font-semibold text-slate-800">Berita</h1>
+            <p class="text-sm text-slate-500">Kelola berita halaman utama.</p>
         </div>
-        <div class="lg:col-span-2 bg-white rounded-2xl shadow-sm border p-6 space-y-3">
-            @forelse($beritas as $b)
-                <div class="flex items-start gap-3 border-b pb-3">
-                    @if($b->foto_path)<img src="{{ asset('storage/'.$b->foto_path) }}" class="h-14 w-14 rounded-lg object-cover shrink-0" alt="">@endif
-                    <div class="flex-1">
-                        <div class="text-sm font-semibold">{{ $b->judul }}</div>
-                        <div class="text-xs text-slate-400">{{ $b->kategori }} · {{ $b->tanggal->format('d M Y') }}</div>
-                    </div>
-                    <form method="POST" action="{{ route('panel.berita.destroy', $b) }}" onsubmit="return confirm('Hapus berita?')">
-                        @csrf @method('DELETE')
-                        <button class="text-rose-600 text-sm">Hapus</button>
-                    </form>
-                </div>
-            @empty
-                <div class="text-slate-400 text-sm">Belum ada berita.</div>
-            @endforelse
+    </div>
+
+    @if(session('status'))
+        <div class="mb-4 px-4 py-3 rounded-xl bg-emerald-50 text-emerald-800 text-sm border border-emerald-200">{{ session('status') }}</div>
+    @endif
+    @if($errors->any())
+        <div class="mb-4 px-4 py-3 rounded-xl bg-red-50 text-red-800 text-sm border border-red-200">{{ $errors->first() }}</div>
+    @endif
+
+    <div class="bg-white rounded-xl shadow-sm border p-6 mb-6">
+        <h3 class="font-semibold text-slate-700 mb-4">Tambah Berita</h3>
+        <form method="POST" action="{{ route('panel.berita.store') }}" enctype="multipart/form-data" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            @csrf
+            <div>
+                <label class="block text-sm font-medium text-slate-700 mb-1">Judul</label>
+                <input type="text" name="judul" required value="{{ old('judul') }}" class="w-full rounded-xl border border-slate-300 text-sm px-3 py-2">
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-slate-700 mb-1">Kategori</label>
+                <input type="text" name="kategori" required value="{{ old('kategori', 'Prestasi') }}" class="w-full rounded-xl border border-slate-300 text-sm px-3 py-2">
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-slate-700 mb-1">Tanggal</label>
+                <input type="date" name="tanggal" required value="{{ old('tanggal', date('Y-m-d')) }}" class="w-full rounded-xl border border-slate-300 text-sm px-3 py-2">
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-slate-700 mb-1">Foto (opsional, maks 3MB)</label>
+                <input type="file" name="foto" accept="image/*" class="w-full rounded-xl border border-slate-300 text-sm px-3 py-2">
+            </div>
+            <div class="md:col-span-2">
+                <label class="block text-sm font-medium text-slate-700 mb-1">Isi</label>
+                <textarea name="isi" rows="4" class="w-full rounded-xl border border-slate-300 text-sm px-3 py-2">{{ old('isi') }}</textarea>
+            </div>
+            <div class="md:col-span-2">
+                <button class="px-4 py-2 rounded-xl bg-blue-600 text-white text-sm font-semibold hover:bg-blue-700">Simpan Berita</button>
+            </div>
+        </form>
+    </div>
+
+    <div class="bg-white rounded-xl shadow-sm border overflow-hidden">
+        <div class="overflow-x-auto">
+            <table class="w-full text-sm">
+                <thead class="bg-slate-50 text-slate-500">
+                    <tr>
+                        <th class="px-5 py-3 text-left">Judul</th>
+                        <th class="px-5 py-3 text-left">Kategori</th>
+                        <th class="px-5 py-3 text-left">Tanggal</th>
+                        <th class="px-5 py-3 text-right">Aksi</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y">
+                    @forelse($beritas as $b)
+                        <tr class="hover:bg-slate-50">
+                            <td class="px-5 py-3 font-medium">{{ $b->judul }}</td>
+                            <td class="px-5 py-3">{{ $b->kategori }}</td>
+                            <td class="px-5 py-3">{{ $b->tanggal->format('d M Y') }}</td>
+                            <td class="px-5 py-3 text-right">
+                                <form method="POST" action="{{ route('panel.berita.destroy', $b) }}" onsubmit="return confirm('Hapus berita ini?')">
+                                    @csrf @method('DELETE')
+                                    <button class="px-3 py-1.5 rounded-xl bg-red-100 text-red-700 text-xs font-medium hover:bg-red-200">Hapus</button>
+                                </form>
+                            </td>
+                        </tr>
+                    @empty
+                        <tr><td colspan="4" class="px-5 py-6 text-center text-slate-400">Belum ada berita.</td></tr>
+                    @endforelse
+                </tbody>
+            </table>
         </div>
     </div>
 </x-app-layout>

@@ -5,9 +5,9 @@
     <form method="POST" action="{{ route('login') }}">
         @csrf
 
-        <!-- NISN / Email -->
+        <!-- NIS / Email -->
         <div>
-            <x-input-label for="credential" :value="__('NISN / Email')" />
+            <x-input-label for="credential" :value="__('NIS / Email')" />
             <x-text-input id="credential" class="block mt-1 w-full" type="text" name="credential" :value="old('credential')" required autofocus autocomplete="username" />
             <x-input-error :messages="$errors->get('credential') ?: $errors->get('nisn')" class="mt-2" />
         </div>

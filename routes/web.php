@@ -17,6 +17,8 @@ use App\Http\Controllers\Panel\KelasController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', [LandingController::class, 'index'])->name('landing');
+Route::get('/pengumuman/{pengumuman}', [ContentController::class, 'pengumumanShow'])->name('pengumuman.show');
+Route::get('/pengumuman/{pengumuman}/pdf', [ContentController::class, 'pengumumanPdf'])->name('pengumuman.pdf');
 
 Route::middleware('auth')->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
@@ -26,6 +28,9 @@ Route::middleware('auth')->group(function () {
         Route::get('/prestasi/status', [PrestasiController::class, 'statusSeleksi'])->name('prestasi.status');
         Route::get('/prestasi/create', [PrestasiController::class, 'create'])->name('prestasi.create');
         Route::post('/prestasi', [PrestasiController::class, 'store'])->name('prestasi.store');
+        Route::get('/prestasi/{prestasi}/edit', [PrestasiController::class, 'edit'])->name('prestasi.edit');
+        Route::put('/prestasi/{prestasi}', [PrestasiController::class, 'update'])->name('prestasi.update');
+        Route::delete('/prestasi/{prestasi}', [PrestasiController::class, 'destroy'])->name('prestasi.destroy');
 
         Route::post('/siswa/naik-kelas', [SiswaController::class, 'naikKelasSiswa'])->name('siswa.naik-kelas');
         Route::post('/siswa/naik-kelas/lewati', [SiswaController::class, 'lewatiNaikKelas'])->name('siswa.naik-kelas.lewati');
@@ -33,40 +38,50 @@ Route::middleware('auth')->group(function () {
         Route::post('/siswa/profil', [SiswaController::class, 'profilUpdate'])->name('siswa.profil.update');
     });
 
-    Route::middleware('role:panitia,wakasiswa')->group(function () {
+    // Waka, Panitia & Validator: view-only
+    Route::middleware('role:panitia,wakasiswa,validator')->group(function () {
         Route::get('/panel/ranking', [SiswaController::class, 'ranking'])->name('panel.ranking');
-        // Rekap Prestasi Siswa (waka hanya boleh lihat rekap & validasi)
         Route::get('/panel/rekap', [RekapController::class, 'index'])->name('panel.rekap.index');
-    });
 
-    Route::middleware('role:panitia')->group(function () {
-        Route::get('/panel/prestasi', [PrestasiController::class, 'index'])->name('panel.prestasi.index');
-        Route::post('/panel/prestasi/{prestasi}/validasi', [PrestasiController::class, 'validasi'])
-            ->name('panel.prestasi.validasi');
-        Route::get('/panel/prestasi/{prestasi}', [PrestasiController::class, 'show'])->name('panel.prestasi.show');
-        Route::get('/panel/prestasi/{prestasi}/dokumen', [PrestasiController::class, 'dokumen'])->name('panel.prestasi.dokumen');
-
-        // Validasi berjenjang: Kelas -> Siswa -> Prestasi (declared BEFORE {prestasi} wildcard)
+        // Validasi berjenjang: Kelas -> Siswa -> Prestasi
         Route::get('/panel/validasi/kelas', [ValidasiController::class, 'kelas'])->name('panel.validasi.kelas');
         Route::get('/panel/validasi/kelas/{kelas}', [ValidasiController::class, 'siswa'])->name('panel.validasi.siswa');
         Route::get('/panel/validasi/siswa/{siswa}', [ValidasiController::class, 'prestasi'])->name('panel.validasi.prestasi');
-
-        // Validasi Sertifikat (cek berkas)
         Route::get('/panel/validasi', [ValidasiController::class, 'index'])->name('panel.validasi.index');
         Route::get('/panel/validasi/{prestasi}', [ValidasiController::class, 'show'])->name('panel.validasi.show');
-        Route::post('/panel/validasi/{prestasi}/putusan', [ValidasiController::class, 'putusan'])->name('panel.validasi.putusan');
 
-        // Penilaian berjenjang: Kelas -> Siswa -> Prestasi (declared BEFORE {prestasi} wildcard)
+        // Prestasi (view)
+        Route::get('/panel/prestasi', [PrestasiController::class, 'index'])->name('panel.prestasi.index');
+        Route::get('/panel/prestasi/{prestasi}', [PrestasiController::class, 'show'])->name('panel.prestasi.show');
+        Route::get('/panel/prestasi/{prestasi}/dokumen', [PrestasiController::class, 'dokumen'])->name('panel.prestasi.dokumen');
+    });
+
+    // Panitia & Validator: write validasi
+    Route::middleware('role:panitia,validator')->group(function () {
+        Route::post('/panel/prestasi/{prestasi}/validasi', [PrestasiController::class, 'validasi'])
+            ->name('panel.prestasi.validasi');
+        Route::post('/panel/validasi/{prestasi}/putusan', [ValidasiController::class, 'putusan'])->name('panel.validasi.putusan');
+    });
+
+    // Panitia only: penilaian, ranking, master data, akun, content
+    Route::middleware('role:panitia')->group(function () {
+        // Penilaian
         Route::get('/panel/penilaian/kelas', [PenilaianController::class, 'kelas'])->name('panel.penilaian.kelas');
         Route::get('/panel/penilaian/kelas/{kelas}', [PenilaianController::class, 'siswa'])->name('panel.penilaian.siswa');
         Route::get('/panel/penilaian/siswa/{siswa}', [PenilaianController::class, 'prestasi'])->name('panel.penilaian.prestasi');
-
-        // Penilaian (input nilai rubrik)
         Route::get('/panel/penilaian', [PenilaianController::class, 'index'])->name('panel.penilaian.index');
         Route::get('/panel/penilaian/{prestasi}', [PenilaianController::class, 'show'])->name('panel.penilaian.show');
-        Route::post('/panel/penilaian/{prestasi}/nilai', [PenilaianController::class, 'nilai'])->name('panel.penilaian.nilai');
+        // Ranking write
+        Route::post('/panel/ranking/generate', [SiswaController::class, 'generateRanking'])->name('panel.ranking.generate');
+        Route::post('/panel/ranking/{ranking}/umumkan', [SiswaController::class, 'umumkanHasil'])->name('panel.ranking.umumkan');
 
-        // Rekap Penilaian (dipindah ke grup panitia,wakasiswa di atas)
+        // Master data
+        Route::get('/panel/tingkat', [\App\Http\Controllers\Panel\TingkatController::class, 'index'])->name('panel.tingkat.index');
+        Route::get('/panel/tingkat/create', [\App\Http\Controllers\Panel\TingkatController::class, 'create'])->name('panel.tingkat.create');
+        Route::post('/panel/tingkat', [\App\Http\Controllers\Panel\TingkatController::class, 'store'])->name('panel.tingkat.store');
+        Route::get('/panel/tingkat/{tingkat}/edit', [\App\Http\Controllers\Panel\TingkatController::class, 'edit'])->name('panel.tingkat.edit');
+        Route::put('/panel/tingkat/{tingkat}', [\App\Http\Controllers\Panel\TingkatController::class, 'update'])->name('panel.tingkat.update');
+        Route::delete('/panel/tingkat/{tingkat}', [\App\Http\Controllers\Panel\TingkatController::class, 'destroy'])->name('panel.tingkat.destroy');
 
         Route::get('/panel/kriteria', [KriteriaController::class, 'index'])->name('panel.kriteria.index');
         Route::post('/panel/kriteria/bobot', [KriteriaController::class, 'updateBobot'])->name('panel.kriteria.bobot');
@@ -74,6 +89,8 @@ Route::middleware('auth')->group(function () {
         Route::get('/panel/rubrik', [RubrikController::class, 'index'])->name('panel.rubrik.index');
         Route::get('/panel/rubrik/create', [RubrikController::class, 'create'])->name('panel.rubrik.create');
         Route::post('/panel/rubrik', [RubrikController::class, 'store'])->name('panel.rubrik.store');
+        Route::post('/panel/rubrik/kategori', [RubrikController::class, 'kategoriStore'])->name('panel.rubrik.kategori.store');
+        Route::delete('/panel/rubrik/kategori/{kategori}', [RubrikController::class, 'kategoriDestroy'])->name('panel.rubrik.kategori.destroy');
         Route::get('/panel/rubrik/{rubrik}/edit', [RubrikController::class, 'edit'])->name('panel.rubrik.edit');
         Route::put('/panel/rubrik/{rubrik}', [RubrikController::class, 'update'])->name('panel.rubrik.update');
         Route::delete('/panel/rubrik/{rubrik}', [RubrikController::class, 'destroy'])->name('panel.rubrik.destroy');
@@ -85,8 +102,6 @@ Route::middleware('auth')->group(function () {
         Route::get('/panel/siswa/{siswa}/edit', [SiswaController::class, 'edit'])->name('panel.siswa.edit');
         Route::put('/panel/siswa/{siswa}', [SiswaController::class, 'update'])->name('panel.siswa.update');
         Route::delete('/panel/siswa/{siswa}', [SiswaController::class, 'destroy'])->name('panel.siswa.destroy');
-        Route::post('/panel/ranking/generate', [SiswaController::class, 'generateRanking'])->name('panel.ranking.generate');
-        Route::post('/panel/ranking/{ranking}/umumkan', [SiswaController::class, 'umumkanHasil'])->name('panel.ranking.umumkan');
 
         Route::get('/panel/banner', [ContentController::class, 'bannerIndex'])->name('panel.banner.index');
         Route::post('/panel/banner', [ContentController::class, 'bannerStore'])->name('panel.banner.store');
@@ -99,8 +114,8 @@ Route::middleware('auth')->group(function () {
         Route::get('/panel/pengumuman', [ContentController::class, 'pengumumanIndex'])->name('panel.pengumuman.index');
         Route::post('/panel/pengumuman', [ContentController::class, 'pengumumanStore'])->name('panel.pengumuman.store');
         Route::delete('/panel/pengumuman/{pengumuman}', [ContentController::class, 'pengumumanDestroy'])->name('panel.pengumuman.destroy');
+        Route::get('/panel/aktivitas', [\App\Http\Controllers\ActivityLogController::class, 'index'])->name('panel.aktivitas.index');
 
-        // Kelola Akun (Panitia saja)
         Route::get('/panel/akun', [UserController::class, 'index'])->name('panel.akun.index');
         Route::get('/panel/akun/create', [UserController::class, 'create'])->name('panel.akun.create');
         Route::post('/panel/akun', [UserController::class, 'store'])->name('panel.akun.store');
@@ -125,6 +140,7 @@ Route::middleware('auth')->group(function () {
 
     Route::middleware('role:wakasiswa')->group(function () {
         Route::post('/panel/ranking/{ranking}/setujui', [SiswaController::class, 'setujuiRanking'])->name('panel.ranking.setujui');
+        Route::post('/panel/ranking/{ranking}/setujui-kategori', [SiswaController::class, 'setujuiKategori'])->name('panel.ranking.setujui-kategori');
     });
 
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');

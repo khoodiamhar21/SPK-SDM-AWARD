@@ -311,7 +311,7 @@ CREATE TABLE `migrations` (
   `migration` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
   `batch` int NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=14 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -320,7 +320,7 @@ CREATE TABLE `migrations` (
 
 LOCK TABLES `migrations` WRITE;
 /*!40000 ALTER TABLE `migrations` DISABLE KEYS */;
-INSERT INTO `migrations` VALUES (1,'0001_01_01_000000_create_users_table',1),(2,'0001_01_01_000001_create_cache_table',1),(3,'0001_01_01_000002_create_jobs_table',1),(4,'2026_07_16_000003_add_role_to_users_table',1),(5,'2026_07_16_000004_create_spk_tables',1),(6,'2026_07_16_000005_create_content_tables',1),(7,'2026_07_16_000006_create_rankings_table',1),(8,'2026_07_16_154651_add_penyelenggara_jenis_nilai_rubrik_to_prestasis_table',1),(9,'2026_07_16_154654_create_rubriks_table',1),(10,'2026_07_17_000001_create_kelas_table',1),(11,'2026_07_17_000002_update_siswas_table',1),(12,'2026_07_17_000003_add_nisn_to_users_table',1);
+INSERT INTO `migrations` VALUES (1,'0001_01_01_000000_create_users_table',1),(2,'0001_01_01_000001_create_cache_table',1),(3,'0001_01_01_000002_create_jobs_table',1),(4,'2026_07_16_000003_add_role_to_users_table',1),(5,'2026_07_16_000004_create_spk_tables',1),(6,'2026_07_16_000005_create_content_tables',1),(7,'2026_07_16_000006_create_rankings_table',1),(8,'2026_07_16_154651_add_penyelenggara_jenis_nilai_rubrik_to_prestasis_table',1),(9,'2026_07_16_154654_create_rubriks_table',1),(10,'2026_07_17_000001_create_kelas_table',1),(11,'2026_07_17_000002_update_siswas_table',1),(12,'2026_07_17_000003_add_nisn_to_users_table',1),(13,'2026_07_18_144955_create_tingkats_table',2);
 /*!40000 ALTER TABLE `migrations` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -442,7 +442,7 @@ CREATE TABLE `prestasis` (
 
 LOCK TABLES `prestasis` WRITE;
 /*!40000 ALTER TABLE `prestasis` DISABLE KEYS */;
-INSERT INTO `prestasis` VALUES (1,1,1,'OSN Matematika','nasional','juara1','pemerintah','perorangan',100.00,'2025-06-10',NULL,'valid',NULL,'2026-07-17 07:14:51','2026-07-17 07:14:51'),(2,1,1,'Festival Seni','provinsi','juara2','pemerintah','perorangan',70.00,'2025-08-15',NULL,'valid',NULL,'2026-07-17 07:14:51','2026-07-17 07:14:51'),(3,2,1,'Olimpiade Sains','nasional','juara3','pemerintah','perorangan',90.00,'2025-09-20',NULL,'valid',NULL,'2026-07-17 07:14:51','2026-07-17 07:14:51'),(4,2,1,'Lomba Tahfidz','kabupaten','juara1','pemerintah','perorangan',90.00,'2025-03-05',NULL,'menunggu',NULL,'2026-07-17 07:14:51','2026-07-17 07:14:51'),(5,3,1,'Lomba Pidato','provinsi','juara1','pemerintah','perorangan',80.00,'2025-07-12',NULL,'valid',NULL,'2026-07-17 07:14:51','2026-07-17 07:14:51'),(6,3,1,'MTQ Tingkat Kota','kabupaten','juara2','pemerintah','perorangan',85.00,'2025-04-18',NULL,'valid',NULL,'2026-07-17 07:14:51','2026-07-17 07:14:51'),(7,4,1,'Lomba Melukis','nasional','juara2','swasta','perorangan',85.00,'2025-10-01',NULL,'valid',NULL,'2026-07-17 07:14:51','2026-07-17 07:14:51'),(8,4,1,'Lomba Menyanyi','provinsi','juara3','swasta','perorangan',NULL,'2025-05-22',NULL,'menunggu',NULL,'2026-07-17 07:14:51','2026-07-17 07:14:51'),(9,5,1,'Olympiade IPS','nasional','juara1','pemerintah','beregu',95.00,'2025-11-03',NULL,'valid',NULL,'2026-07-17 07:14:51','2026-07-17 07:14:51'),(10,5,1,'Lomba Basket','kabupaten','juara1','swasta','beregu',75.00,'2025-02-14',NULL,'valid',NULL,'2026-07-17 07:14:51','2026-07-17 07:14:51');
+INSERT INTO `prestasis` VALUES (1,1,1,'OSN Matematika','nasional','juara1','pemerintah','perorangan',100.00,'2025-06-10',NULL,'valid',NULL,'2026-07-17 07:14:51','2026-07-17 07:14:51'),(2,1,1,'Festival Seni','provinsi','juara2','pemerintah','perorangan',70.00,'2025-08-15',NULL,'valid',NULL,'2026-07-17 07:14:51','2026-07-17 07:14:51'),(3,2,1,'Olimpiade Sains','nasional','juara3','pemerintah','perorangan',90.00,'2025-09-20',NULL,'valid',NULL,'2026-07-17 07:14:51','2026-07-17 07:14:51'),(4,2,1,'Lomba Tahfidz','kabupaten','juara1','pemerintah','perorangan',90.00,'2025-03-05',NULL,'menunggu',NULL,'2026-07-17 07:14:51','2026-07-17 07:14:51'),(5,3,1,'Lomba Pidato','provinsi','juara1','pemerintah','perorangan',80.00,'2025-07-12',NULL,'valid',NULL,'2026-07-17 07:14:51','2026-07-17 07:14:51'),(6,3,1,'MTQ Tingkat Kota','kabupaten','juara2','pemerintah','perorangan',85.00,'2025-04-18',NULL,'valid',NULL,'2026-07-17 07:14:51','2026-07-17 07:14:51'),(7,4,1,'Lomba Melukis','nasional','juara2','swasta','perorangan',85.00,'2025-10-01',NULL,'valid',NULL,'2026-07-17 07:14:51','2026-07-17 07:14:51'),(8,4,1,'Lomba Menyanyi','provinsi','juara3','swasta','perorangan',65.00,'2025-05-22',NULL,'menunggu',NULL,'2026-07-17 07:14:51','2026-07-18 08:27:17'),(9,5,1,'Olympiade IPS','nasional','juara1','pemerintah','beregu',95.00,'2025-11-03',NULL,'valid',NULL,'2026-07-17 07:14:51','2026-07-17 07:14:51'),(10,5,1,'Lomba Basket','kabupaten','juara1','swasta','beregu',75.00,'2025-02-14',NULL,'valid',NULL,'2026-07-17 07:14:51','2026-07-17 07:14:51');
 /*!40000 ALTER TABLE `prestasis` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -501,7 +501,7 @@ CREATE TABLE `rubriks` (
   `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `rubrik_uniq` (`penyelenggara`,`peringkat`,`jenis`,`tingkat`)
-) ENGINE=InnoDB AUTO_INCREMENT=27 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=37 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -510,7 +510,7 @@ CREATE TABLE `rubriks` (
 
 LOCK TABLES `rubriks` WRITE;
 /*!40000 ALTER TABLE `rubriks` DISABLE KEYS */;
-INSERT INTO `rubriks` VALUES (1,'pemerintah','juara1','perorangan','nasional','AA1',100.00,'2026-07-17 07:14:51','2026-07-17 07:14:51'),(2,'pemerintah','juara2','perorangan','nasional','AA2',95.00,'2026-07-17 07:14:51','2026-07-17 07:14:51'),(3,'pemerintah','juara3','perorangan','nasional','AA3',90.00,'2026-07-17 07:14:51','2026-07-17 07:14:51'),(4,'pemerintah','juara1','beregu','nasional','AA4',95.00,'2026-07-17 07:14:51','2026-07-17 07:14:51'),(5,'pemerintah','juara2','beregu','nasional','AA5',90.00,'2026-07-17 07:14:51','2026-07-17 07:14:51'),(6,'pemerintah','juara3','beregu','nasional','AA6',85.00,'2026-07-17 07:14:51','2026-07-17 07:14:51'),(7,'pemerintah','juara1','perorangan','provinsi','BA6',80.00,'2026-07-17 07:14:51','2026-07-17 07:14:51'),(8,'pemerintah','juara2','perorangan','provinsi','BB6',70.00,'2026-07-17 07:14:51','2026-07-17 07:14:51'),(9,'pemerintah','juara1','perorangan','kabupaten','CA1',90.00,'2026-07-17 07:14:51','2026-07-17 07:14:51'),(10,'pemerintah','juara2','perorangan','kabupaten','CA2',85.00,'2026-07-17 07:14:51','2026-07-17 07:14:51'),(11,'pemerintah','juara3','perorangan','kabupaten','CA3',80.00,'2026-07-17 07:14:51','2026-07-17 07:14:51'),(12,'pemerintah','juara1','beregu','kabupaten','CA4',85.00,'2026-07-17 07:14:51','2026-07-17 07:14:51'),(13,'pemerintah','juara2','beregu','kabupaten','CA5',80.00,'2026-07-17 07:14:51','2026-07-17 07:14:51'),(14,'pemerintah','juara3','beregu','kabupaten','CA6',75.00,'2026-07-17 07:14:51','2026-07-17 07:14:51'),(15,'swasta','juara1','perorangan','nasional','AB1',90.00,'2026-07-17 07:14:51','2026-07-17 07:14:51'),(16,'swasta','juara2','perorangan','nasional','AB2',85.00,'2026-07-17 07:14:51','2026-07-17 07:14:51'),(17,'swasta','juara3','perorangan','nasional','AB3',80.00,'2026-07-17 07:14:51','2026-07-17 07:14:51'),(18,'swasta','juara1','beregu','nasional','AB4',85.00,'2026-07-17 07:14:51','2026-07-17 07:14:51'),(19,'swasta','juara2','beregu','nasional','AB5',80.00,'2026-07-17 07:14:51','2026-07-17 07:14:51'),(20,'swasta','juara3','beregu','nasional','AB6',75.00,'2026-07-17 07:14:51','2026-07-17 07:14:51'),(21,'swasta','juara1','perorangan','kabupaten','CB1',80.00,'2026-07-17 07:14:51','2026-07-17 07:14:51'),(22,'swasta','juara2','perorangan','kabupaten','CB2',75.00,'2026-07-17 07:14:51','2026-07-17 07:14:51'),(23,'swasta','juara3','perorangan','kabupaten','CB3',70.00,'2026-07-17 07:14:51','2026-07-17 07:14:51'),(24,'swasta','juara1','beregu','kabupaten','CB4',75.00,'2026-07-17 07:14:51','2026-07-17 07:14:51'),(25,'swasta','juara2','beregu','kabupaten','CB5',70.00,'2026-07-17 07:14:51','2026-07-17 07:14:51'),(26,'swasta','juara3','beregu','kabupaten','CB6',65.00,'2026-07-17 07:14:51','2026-07-17 07:14:51');
+INSERT INTO `rubriks` VALUES (1,'pemerintah','juara1','perorangan','nasional','AA1',100.00,'2026-07-17 07:14:51','2026-07-17 07:14:51'),(2,'pemerintah','juara2','perorangan','nasional','AA2',95.00,'2026-07-17 07:14:51','2026-07-17 07:14:51'),(3,'pemerintah','juara3','perorangan','nasional','AA3',90.00,'2026-07-17 07:14:51','2026-07-17 07:14:51'),(4,'pemerintah','juara1','beregu','nasional','AA4',95.00,'2026-07-17 07:14:51','2026-07-17 07:14:51'),(5,'pemerintah','juara2','beregu','nasional','AA5',90.00,'2026-07-17 07:14:51','2026-07-17 07:14:51'),(6,'pemerintah','juara3','beregu','nasional','AA6',85.00,'2026-07-17 07:14:51','2026-07-17 07:14:51'),(7,'pemerintah','juara1','perorangan','provinsi','BA1',95.00,'2026-07-17 07:14:51','2026-07-18 08:27:17'),(8,'pemerintah','juara2','perorangan','provinsi','BA2',85.00,'2026-07-17 07:14:51','2026-07-18 08:27:17'),(9,'pemerintah','juara1','perorangan','kabupaten','CA1',90.00,'2026-07-17 07:14:51','2026-07-17 07:14:51'),(10,'pemerintah','juara2','perorangan','kabupaten','CA2',85.00,'2026-07-17 07:14:51','2026-07-17 07:14:51'),(11,'pemerintah','juara3','perorangan','kabupaten','CA3',80.00,'2026-07-17 07:14:51','2026-07-17 07:14:51'),(12,'pemerintah','juara1','beregu','kabupaten','CA4',85.00,'2026-07-17 07:14:51','2026-07-17 07:14:51'),(13,'pemerintah','juara2','beregu','kabupaten','CA5',80.00,'2026-07-17 07:14:51','2026-07-17 07:14:51'),(14,'pemerintah','juara3','beregu','kabupaten','CA6',75.00,'2026-07-17 07:14:51','2026-07-17 07:14:51'),(15,'swasta','juara1','perorangan','nasional','AB1',90.00,'2026-07-17 07:14:51','2026-07-17 07:14:51'),(16,'swasta','juara2','perorangan','nasional','AB2',85.00,'2026-07-17 07:14:51','2026-07-17 07:14:51'),(17,'swasta','juara3','perorangan','nasional','AB3',80.00,'2026-07-17 07:14:51','2026-07-17 07:14:51'),(18,'swasta','juara1','beregu','nasional','AB4',85.00,'2026-07-17 07:14:51','2026-07-17 07:14:51'),(19,'swasta','juara2','beregu','nasional','AB5',80.00,'2026-07-17 07:14:51','2026-07-17 07:14:51'),(20,'swasta','juara3','beregu','nasional','AB6',75.00,'2026-07-17 07:14:51','2026-07-17 07:14:51'),(21,'swasta','juara1','perorangan','kabupaten','CB1',80.00,'2026-07-17 07:14:51','2026-07-17 07:14:51'),(22,'swasta','juara2','perorangan','kabupaten','CB2',75.00,'2026-07-17 07:14:51','2026-07-17 07:14:51'),(23,'swasta','juara3','perorangan','kabupaten','CB3',70.00,'2026-07-17 07:14:51','2026-07-17 07:14:51'),(24,'swasta','juara1','beregu','kabupaten','CB4',75.00,'2026-07-17 07:14:51','2026-07-17 07:14:51'),(25,'swasta','juara2','beregu','kabupaten','CB5',70.00,'2026-07-17 07:14:51','2026-07-17 07:14:51'),(26,'swasta','juara3','beregu','kabupaten','CB6',65.00,'2026-07-17 07:14:51','2026-07-17 07:14:51'),(27,'pemerintah','juara3','perorangan','provinsi','BA3',75.00,'2026-07-18 08:27:17','2026-07-18 08:27:17'),(28,'pemerintah','juara1','beregu','provinsi','BA4',90.00,'2026-07-18 08:27:17','2026-07-18 08:27:17'),(29,'pemerintah','juara2','beregu','provinsi','BA5',80.00,'2026-07-18 08:27:17','2026-07-18 08:27:17'),(30,'pemerintah','juara3','beregu','provinsi','BA6',70.00,'2026-07-18 08:27:17','2026-07-18 08:27:17'),(31,'swasta','juara1','perorangan','provinsi','BB1',85.00,'2026-07-18 08:27:17','2026-07-18 08:27:17'),(32,'swasta','juara2','perorangan','provinsi','BB2',75.00,'2026-07-18 08:27:17','2026-07-18 08:27:17'),(33,'swasta','juara3','perorangan','provinsi','BB3',65.00,'2026-07-18 08:27:17','2026-07-18 08:27:17'),(34,'swasta','juara1','beregu','provinsi','BB4',80.00,'2026-07-18 08:27:17','2026-07-18 08:27:17'),(35,'swasta','juara2','beregu','provinsi','BB5',70.00,'2026-07-18 08:27:17','2026-07-18 08:27:17'),(36,'swasta','juara3','beregu','provinsi','BB6',60.00,'2026-07-18 08:27:17','2026-07-18 08:27:17');
 /*!40000 ALTER TABLE `rubriks` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -584,8 +584,40 @@ CREATE TABLE `siswas` (
 
 LOCK TABLES `siswas` WRITE;
 /*!40000 ALTER TABLE `siswas` DISABLE KEYS */;
-INSERT INTO `siswas` VALUES (1,3,'2024001','Budi Santoso',5,NULL,NULL,NULL,NULL,NULL,NULL,'2026-07-17 07:14:49',1,'2026-07-17 07:14:48','2026-07-17 07:14:49'),(2,4,'2024002','Siti Aminah',6,NULL,NULL,NULL,NULL,NULL,NULL,'2026-07-17 07:14:49',1,'2026-07-17 07:14:49','2026-07-17 07:14:49'),(3,5,'2024003','Rizki Pratama',6,NULL,NULL,NULL,NULL,NULL,NULL,'2026-07-17 07:14:50',1,'2026-07-17 07:14:49','2026-07-17 07:53:47'),(4,6,'2024004','Nadia Lestari',5,NULL,NULL,NULL,NULL,NULL,NULL,'2026-07-17 07:14:50',1,'2026-07-17 07:14:50','2026-07-17 07:14:50'),(5,7,'2024005','Fajar Nugroho',6,NULL,NULL,NULL,NULL,NULL,NULL,'2026-07-17 07:14:51',1,'2026-07-17 07:14:50','2026-07-17 07:14:51'),(6,8,'0234540','ARIF HIDAYAT',5,NULL,'Lampung Tengah','2015-01-14','L','metro','0800000000000000','2026-07-17 07:27:17',1,'2026-07-17 07:26:27','2026-07-17 07:27:17');
+INSERT INTO `siswas` VALUES (1,3,'2024001','Budi Santoso',5,NULL,NULL,NULL,NULL,NULL,NULL,'2026-07-18 08:27:14',1,'2026-07-17 07:14:48','2026-07-18 08:27:14'),(2,4,'2024002','Siti Aminah',6,NULL,NULL,NULL,NULL,NULL,NULL,'2026-07-18 08:27:15',1,'2026-07-17 07:14:49','2026-07-18 08:27:15'),(3,5,'2024003','Rizki Pratama',6,NULL,NULL,NULL,NULL,NULL,NULL,'2026-07-18 08:27:16',1,'2026-07-17 07:14:49','2026-07-18 08:27:16'),(4,6,'2024004','Nadia Lestari',5,NULL,NULL,NULL,NULL,NULL,NULL,'2026-07-18 08:27:16',1,'2026-07-17 07:14:50','2026-07-18 08:27:16'),(5,7,'2024005','Fajar Nugroho',6,NULL,NULL,NULL,NULL,NULL,NULL,'2026-07-18 08:27:17',1,'2026-07-17 07:14:50','2026-07-18 08:27:17'),(6,8,'0234540','ARIF HIDAYAT',5,NULL,'Lampung Tengah','2015-01-14','L','metro','0800000000000000','2026-07-17 07:27:17',1,'2026-07-17 07:26:27','2026-07-17 07:27:17');
 /*!40000 ALTER TABLE `siswas` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `tingkats`
+--
+
+DROP TABLE IF EXISTS `tingkats`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `tingkats` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `kode` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `nama` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `kriteria_id` bigint unsigned NOT NULL,
+  `urutan` int NOT NULL DEFAULT '0',
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `tingkats_kode_unique` (`kode`),
+  KEY `tingkats_kriteria_id_foreign` (`kriteria_id`),
+  CONSTRAINT `tingkats_kriteria_id_foreign` FOREIGN KEY (`kriteria_id`) REFERENCES `kriterias` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `tingkats`
+--
+
+LOCK TABLES `tingkats` WRITE;
+/*!40000 ALTER TABLE `tingkats` DISABLE KEYS */;
+INSERT INTO `tingkats` VALUES (1,'kabupaten','Kabupaten/Kota',3,1,'2026-07-18 07:54:12','2026-07-18 07:54:12'),(2,'provinsi','Provinsi',2,2,'2026-07-18 07:54:12','2026-07-18 07:54:12'),(3,'nasional','Nasional',1,3,'2026-07-18 07:54:12','2026-07-18 07:54:12'),(4,'internasional','Internasional',1,4,'2026-07-18 07:54:12','2026-07-18 07:54:12');
+/*!40000 ALTER TABLE `tingkats` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -632,4 +664,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2026-07-18 15:07:25
+-- Dump completed on 2026-07-18 22:44:04

@@ -27,7 +27,7 @@
                     <tr>
                         <th class="px-5 py-3 text-left font-medium">No</th>
                         <th class="px-5 py-3 text-left font-medium">Nama Siswa</th>
-                        <th class="px-5 py-3 text-left font-medium">NISN</th>
+                        <th class="px-5 py-3 text-left font-medium">NIS</th>
                         <th class="px-5 py-3 text-left font-medium">Status</th>
                     </tr>
                 </thead>

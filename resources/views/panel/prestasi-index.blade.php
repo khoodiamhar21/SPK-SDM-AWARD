@@ -20,6 +20,7 @@
                     <tr>
                         <th class="px-4 py-3 text-left">Siswa</th>
                         <th class="px-4 py-3 text-left">Kegiatan</th>
+                        <th class="px-4 py-3 text-left">Jenis</th>
                         <th class="px-4 py-3 text-left">Tingkat</th>
                         <th class="px-4 py-3 text-left">Peringkat</th>
                         <th class="px-4 py-3 text-left">Status</th>
@@ -31,6 +32,13 @@
                         <tr class="hover:bg-slate-50">
                             <td class="px-4 py-3 font-medium">{{ $p->siswa->nama ?? '-' }}</td>
                             <td class="px-4 py-3">{{ $p->nama_kegiatan }}</td>
+                            <td class="px-4 py-3">
+                                @if($p->jenis_prestasi === 'akademik')
+                                    <span class="px-2 py-0.5 rounded-full bg-blue-100 text-blue-700 text-xs">Akademik</span>
+                                @else
+                                    <span class="px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-700 text-xs">Non-Akademik</span>
+                                @endif
+                            </td>
                             <td class="px-4 py-3 capitalize">{{ $p->tingkat }}</td>
                             <td class="px-4 py-3">{{ str_replace('juara','Juara ',$p->peringkat) }}</td>
                             <td class="px-4 py-3">
@@ -47,7 +55,7 @@
                             </td>
                         </tr>
                     @empty
-                        <tr><td colspan="6" class="px-4 py-6 text-center text-slate-400">Tidak ada data.</td></tr>
+                        <tr><td colspan="7" class="px-4 py-6 text-center text-slate-400">Tidak ada data.</td></tr>
                     @endforelse
                 </tbody>
             </table>

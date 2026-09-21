@@ -4,7 +4,7 @@
     <a href="{{ route('panel.siswa.index') }}" class="text-sm text-blue-600 hover:underline mb-4 inline-block">← Kembali ke daftar siswa</a>
 
     <div class="grid sm:grid-cols-3 gap-4 mb-6">
-        <div class="bg-white rounded-xl shadow-sm p-5 border"><div class="text-sm text-slate-500">NIS</div><div class="text-lg font-semibold">{{ $siswa->nis ?? '-' }}</div></div>
+        <div class="bg-white rounded-xl shadow-sm p-5 border"><div class="text-sm text-slate-500">NIS</div><div class="text-lg font-semibold">{{ $siswa->nisn ?? '-' }}</div></div>
         <div class="bg-white rounded-xl shadow-sm p-5 border"><div class="text-sm text-slate-500">Kelas</div><div class="text-lg font-semibold">{{ $siswa->kelas->nama ?? '-' }}</div></div>
         <div class="bg-white rounded-xl shadow-sm p-5 border"><div class="text-sm text-slate-500">Total Prestasi</div><div class="text-lg font-semibold text-blue-600">{{ $siswa->prestasis->count() }}</div></div>
     </div>
@@ -32,7 +32,7 @@
                                 </td>
                                 <td class="px-5 py-3 capitalize">{{ $p->tingkat }}</td>
                                 <td class="px-5 py-3">{{ str_replace('juara','Juara ',$p->peringkat) }}</td>
-                                <td class="px-5 py-3 text-[11px] capitalize">{{ $p->penyelenggara }} / {{ $p->jenis }}</td>
+                                <td class="px-5 py-3 text-[11px] capitalize">{{ $p->kategoriLomba->nama ?? '-' }} / {{ $p->jenis }}</td>
                                 <td class="px-5 py-3 font-mono">{{ $p->nilai_rubrik ?? '-' }}</td>
                                 <td class="px-5 py-3 text-slate-500">{{ $p->periode->nama ?? '-' }}</td>
                                 <td class="px-5 py-3">

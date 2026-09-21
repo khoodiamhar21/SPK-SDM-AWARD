@@ -6,7 +6,6 @@ use App\Http\Controllers\Controller;
 use App\Models\Kelas;
 use App\Models\Periode;
 use App\Models\Prestasi;
-use App\Models\Rubrik;
 use App\Models\Siswa;
 use Illuminate\Http\Request;
 
@@ -71,29 +70,6 @@ class PenilaianController extends Controller
     {
         $prestasi->load(['siswa', 'periode']);
 
-        $skorRekomendasi = Rubrik::cariSkor(
-            $prestasi->penyelenggara,
-            $prestasi->peringkat,
-            $prestasi->jenis,
-            $prestasi->tingkat
-        );
-
-        return view('panel.penilaian-show', compact('prestasi', 'skorRekomendasi'));
-    }
-
-    public function nilai(Request $request, Prestasi $prestasi)
-    {
-        $data = $request->validate([
-            'nilai_rubrik' => 'required|numeric|min:40|max:100',
-            'catatan' => 'nullable|string',
-        ]);
-
-        $prestasi->update([
-            'nilai_rubrik' => $data['nilai_rubrik'],
-            'catatan' => $data['catatan'] ?? $prestasi->catatan,
-        ]);
-
-        return redirect()->route('panel.penilaian.prestasi', $prestasi->siswa)
-            ->with('status', 'Nilai prestasi disimpan.');
+        return view('panel.penilaian-show', compact('prestasi'));
     }
 }

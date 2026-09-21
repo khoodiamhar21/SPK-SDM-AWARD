@@ -11,6 +11,7 @@
     @endif
 
     @if($periode)
+        @if(!auth()->user()->isValidator())
         <div class="flex gap-2 mb-4 text-sm">
             @foreach(['menunggu'=>'Menunggu','valid'=>'Lolos','ditolak'=>'Ditolak'] as $k=>$label)
                 <a href="{{ route('panel.validasi.index', ['status'=>$k]) }}"
@@ -19,6 +20,7 @@
                 </a>
             @endforeach
         </div>
+        @endif
 
         <div class="bg-white rounded-xl shadow-sm border overflow-hidden">
             <div class="overflow-x-auto">

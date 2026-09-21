@@ -1,7 +1,7 @@
 <x-app-layout>
     <div class="mb-6">
         <h1 class="text-xl font-semibold text-slate-800">{{ isset($rubrik) ? 'Edit Rubrik' : 'Tambah Rubrik' }}</h1>
-        <p class="text-sm text-slate-500">Kombinasi unik penyelenggara + peringkat + jenis + tingkat menentukan satu skor.</p>
+        <p class="text-sm text-slate-500">Pilih kategori lomba yang sudah ada, atau isi nama kategori baru.</p>
     </div>
 
     <div class="bg-white rounded-xl shadow-sm border p-6 max-w-2xl">
@@ -10,12 +10,15 @@
             @if(isset($rubrik)) @method('PUT') @endif
 
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div>
-                    <label class="block text-sm font-medium text-slate-700 mb-1">Penyelenggara</label>
-                    <select name="penyelenggara" class="w-full rounded-xl border-slate-300 text-sm">
-                        <option value="pemerintah" {{ old('penyelenggara', $rubrik->penyelenggara ?? '') == 'pemerintah' ? 'selected' : '' }}>Instansi Pemerintahan</option>
-                        <option value="swasta" {{ old('penyelenggara', $rubrik->penyelenggara ?? '') == 'swasta' ? 'selected' : '' }}>Instansi Swasta</option>
+                <div class="sm:col-span-2">
+                    <label class="block text-sm font-medium text-slate-700 mb-1">Kategori Lomba</label>
+                    <select name="kategori_lomba_id" class="w-full rounded-xl border-slate-300 text-sm">
+                        <option value="">-- Pilih atau isi kategori baru di bawah --</option>
+                        @foreach($kategoris as $k)
+                            <option value="{{ $k->id }}" {{ old('kategori_lomba_id', $rubrik->kategori_lomba_id ?? '') == $k->id ? 'selected' : '' }}>{{ $k->nama }}</option>
+                        @endforeach
                     </select>
+                    <input type="text" name="kategori_baru" value="{{ old('kategori_baru') }}" placeholder="Kategori baru (opsional, akan disimpan)" class="mt-2 w-full rounded-xl border-slate-300 text-sm">
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-slate-700 mb-1">Peringkat Juara</label>
@@ -35,9 +38,9 @@
                 <div>
                     <label class="block text-sm font-medium text-slate-700 mb-1">Tingkat Kejuaraan</label>
                     <select name="tingkat" class="w-full rounded-xl border-slate-300 text-sm">
-                        <option value="nasional" {{ old('tingkat', $rubrik->tingkat ?? '') == 'nasional' ? 'selected' : '' }}>Nasional</option>
-                        <option value="provinsi" {{ old('tingkat', $rubrik->tingkat ?? '') == 'provinsi' ? 'selected' : '' }}>Provinsi</option>
-                        <option value="kabupaten" {{ old('tingkat', $rubrik->tingkat ?? '') == 'kabupaten' ? 'selected' : '' }}>Kabupaten/Kota</option>
+                        @foreach($tingkats as $t)
+                            <option value="{{ $t->kode }}" {{ old('tingkat', $rubrik->tingkat ?? '') == $t->kode ? 'selected' : '' }}>{{ $t->nama }}</option>
+                        @endforeach
                     </select>
                 </div>
                 <div>

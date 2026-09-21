@@ -5,10 +5,13 @@ namespace App\Http\Controllers;
 use App\Models\Bobot;
 use App\Models\Kriteria;
 use App\Models\Periode;
+use App\Services\SawService;
+use App\Traits\LogsActivity;
 use Illuminate\Http\Request;
 
 class KriteriaController extends Controller
 {
+    use LogsActivity;
     public function index()
     {
         $periodes = Periode::orderByDesc('tahun')->get();
@@ -36,6 +39,9 @@ class KriteriaController extends Controller
                 ['bobot' => $bobot]
             );
         }
+
+        $this->log('update_bobot', "Update bobot kriteria periode #{$data['periode_id']}");
+        SawService::flushCache((int) $data['periode_id']);
 
         return back()->with('status', 'Bobot kriteria disimpan.');
     }

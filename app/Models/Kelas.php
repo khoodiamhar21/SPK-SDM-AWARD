@@ -2,13 +2,13 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
-#[Fillable(['nama', 'urutan'])]
+/** @mixin \Illuminate\Database\Eloquent\Builder */
 class Kelas extends Model
 {
+    protected $fillable = ['nama', 'urutan'];
     public function siswas(): HasMany
     {
         return $this->hasMany(Siswa::class);

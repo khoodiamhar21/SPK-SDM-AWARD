@@ -1,47 +1,71 @@
 <x-app-layout>
-    <x-slot name="header"><h2 class="font-semibold text-xl text-slate-800">Kelola Banner</h2></x-slot>
-
-    <div class="grid lg:grid-cols-3 gap-6">
-        <div class="bg-white rounded-2xl shadow-sm border p-6">
-            <h3 class="font-semibold mb-4">Tambah Banner</h3>
-            <form method="POST" action="{{ route('panel.banner.store') }}" enctype="multipart/form-data" class="space-y-4">
-                @csrf
-                <div>
-                    <x-input-label for="foto" value="Foto Banner" />
-                    <input type="file" name="foto" accept="image/*" required class="mt-1 block w-full text-sm file:mr-3 file:py-2 file:px-4 file:rounded-lg file:border-0 file:bg-blue-50 file:text-blue-700">
-                    <x-input-error :messages="$errors->get('foto')" class="mt-2" />
-                </div>
-                <div>
-                    <x-input-label for="judul" value="Judul (opsional)" />
-                    <x-text-input id="judul" name="judul" class="mt-1 block w-full" />
-                </div>
-                <div>
-                    <x-input-label for="urutan" value="Urutan" />
-                    <x-text-input id="urutan" type="number" name="urutan" class="mt-1 block w-full" value="0" />
-                </div>
-                <x-primary-button>Simpan</x-primary-button>
-            </form>
+    <div class="flex items-center justify-between mb-6">
+        <div>
+            <h1 class="text-xl font-semibold text-slate-800">Banner</h1>
+            <p class="text-sm text-slate-500">Kelola banner halaman utama.</p>
         </div>
-        <div class="lg:col-span-2 bg-white rounded-2xl shadow-sm border p-6">
-            <div class="grid sm:grid-cols-2 gap-4">
-                @forelse($banners as $b)
-                    <div class="border rounded-xl overflow-hidden">
-                        <img src="{{ asset('storage/'.$b->foto_path) }}" class="h-32 w-full object-cover" alt="">
-                        <div class="p-3 flex items-center justify-between">
-                            <div class="text-sm">
-                                <div class="font-medium truncate">{{ $b->judul ?? 'Tanpa judul' }}</div>
-                                <div class="text-xs text-slate-400">Urutan {{ $b->urutan }}</div>
-                            </div>
-                            <form method="POST" action="{{ route('panel.banner.destroy', $b) }}" onsubmit="return confirm('Hapus banner?')">
-                                @csrf @method('DELETE')
-                                <button class="text-rose-600 hover:text-rose-700 text-sm">Hapus</button>
-                            </form>
-                        </div>
-                    </div>
-                @empty
-                    <div class="text-slate-400 text-sm">Belum ada banner.</div>
-                @endforelse
+    </div>
+
+    @if(session('status'))
+        <div class="mb-4 px-4 py-3 rounded-xl bg-emerald-50 text-emerald-800 text-sm border border-emerald-200">{{ session('status') }}</div>
+    @endif
+    @if($errors->any())
+        <div class="mb-4 px-4 py-3 rounded-xl bg-red-50 text-red-800 text-sm border border-red-200">{{ $errors->first() }}</div>
+    @endif
+
+    <div class="bg-white rounded-xl shadow-sm border p-6 mb-6">
+        <h3 class="font-semibold text-slate-700 mb-4">Tambah Banner</h3>
+        <form method="POST" action="{{ route('panel.banner.store') }}" enctype="multipart/form-data" class="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
+            @csrf
+            <div class="md:col-span-2">
+                <label class="block text-sm font-medium text-slate-700 mb-1">Foto (jpg/png/webp, maks 3MB)</label>
+                <input type="file" name="foto" required accept="image/*" class="w-full rounded-xl border border-slate-300 text-sm px-3 py-2">
             </div>
+            <div>
+                <label class="block text-sm font-medium text-slate-700 mb-1">Judul (opsional)</label>
+                <input type="text" name="judul" value="{{ old('judul') }}" class="w-full rounded-xl border border-slate-300 text-sm px-3 py-2">
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-slate-700 mb-1">Urutan</label>
+                <input type="number" name="urutan" value="{{ old('urutan', 0) }}" class="w-full rounded-xl border border-slate-300 text-sm px-3 py-2">
+            </div>
+            <div class="md:col-span-4">
+                <button class="px-4 py-2 rounded-xl bg-blue-600 text-white text-sm font-semibold hover:bg-blue-700">Simpan Banner</button>
+            </div>
+        </form>
+    </div>
+
+    <div class="bg-white rounded-xl shadow-sm border overflow-hidden">
+        <div class="overflow-x-auto">
+            <table class="w-full text-sm">
+                <thead class="bg-slate-50 text-slate-500">
+                    <tr>
+                        <th class="px-5 py-3 text-left">Foto</th>
+                        <th class="px-5 py-3 text-left">Judul</th>
+                        <th class="px-5 py-3 text-center">Urutan</th>
+                        <th class="px-5 py-3 text-center">Aktif</th>
+                        <th class="px-5 py-3 text-right">Aksi</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y">
+                    @forelse($banners as $b)
+                        <tr class="hover:bg-slate-50">
+                            <td class="px-5 py-3"><img src="{{ asset('storage/'.$b->foto_path) }}" class="h-12 w-20 object-cover rounded-lg border" alt=""></td>
+                            <td class="px-5 py-3 font-medium">{{ $b->judul ?? '-' }}</td>
+                            <td class="px-5 py-3 text-center">{{ $b->urutan }}</td>
+                            <td class="px-5 py-3 text-center">{{ $b->aktif ? 'Ya' : 'Tidak' }}</td>
+                            <td class="px-5 py-3 text-right">
+                                <form method="POST" action="{{ route('panel.banner.destroy', $b) }}" onsubmit="return confirm('Hapus banner ini?')">
+                                    @csrf @method('DELETE')
+                                    <button class="px-3 py-1.5 rounded-xl bg-red-100 text-red-700 text-xs font-medium hover:bg-red-200">Hapus</button>
+                                </form>
+                            </td>
+                        </tr>
+                    @empty
+                        <tr><td colspan="5" class="px-5 py-6 text-center text-slate-400">Belum ada banner.</td></tr>
+                    @endforelse
+                </tbody>
+            </table>
         </div>
     </div>
 </x-app-layout>

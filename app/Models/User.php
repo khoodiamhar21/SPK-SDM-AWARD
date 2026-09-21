@@ -3,18 +3,17 @@
 namespace App\Models;
 
 use Database\Factories\UserFactory;
-use Illuminate\Database\Eloquent\Attributes\Fillable;
-use Illuminate\Database\Eloquent\Attributes\Hidden;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
-    #[Fillable(['name', 'email', 'password', 'role', 'photo_path', 'nisn'])]
-    #[Hidden(['password', 'remember_token'])]
 class User extends Authenticatable
 {
-    /** @use HasFactory<UserFactory> */
     use HasFactory, Notifiable;
+
+    protected $fillable = ['name', 'email', 'password', 'photo_path', 'nisn'];
+
+    protected $hidden = ['password', 'remember_token'];
 
     protected function casts(): array
     {
@@ -37,6 +36,11 @@ class User extends Authenticatable
     public function isWaka(): bool
     {
         return $this->role === 'wakasiswa';
+    }
+
+    public function isValidator(): bool
+    {
+        return $this->role === 'validator';
     }
 
     public function isSiswa(): bool

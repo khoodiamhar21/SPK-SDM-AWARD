@@ -5,7 +5,7 @@
     </div>
     <div class="bg-white rounded-xl shadow-sm border overflow-hidden">
         <table class="w-full text-sm">
-            <thead class="bg-slate-50 text-slate-500"><tr><th class="px-4 py-3 text-left">NISN</th><th class="px-4 py-3 text-left">Nama</th><th class="px-4 py-3 text-left">Prestasi</th><th class="px-4 py-3 text-right">Aksi</th></tr></thead>
+            <thead class="bg-slate-50 text-slate-500"><tr><th class="px-4 py-3 text-left">NIS</th><th class="px-4 py-3 text-left">Nama</th><th class="px-4 py-3 text-left">Prestasi</th><th class="px-4 py-3 text-right">Aksi</th></tr></thead>
             <tbody class="divide-y">
                 @forelse($siswas as $s)
                     <tr class="hover:bg-slate-50">

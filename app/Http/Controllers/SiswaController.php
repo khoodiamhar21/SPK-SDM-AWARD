@@ -2,16 +2,19 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\KategoriLomba;
 use App\Models\Kelas;
 use App\Models\Periode;
 use App\Models\Prestasi;
 use App\Models\Ranking;
 use App\Models\Siswa;
 use App\Services\SawService;
+use App\Traits\LogsActivity;
 use Illuminate\Http\Request;
 
 class SiswaController extends Controller
 {
+    use LogsActivity;
     public function index(Request $request)
     {
         $kelasId = $request->get('kelas_id');
@@ -157,17 +160,16 @@ class SiswaController extends Controller
     {
         $periode = Periode::where('aktif', true)->first();
 
-        $kelasList = Kelas::orderBy('urutan')->get();
-        $filterKelas = $request->query('kelas');
+        $filterJenis = $request->query('jenis');
 
         $final = null;
         $riwayat = collect();
         if ($periode) {
-            $final = Ranking::where('periode_id', $periode->id)->latest()->first();
-            $riwayat = Ranking::where('periode_id', $periode->id)->latest()->get();
+            $final = Ranking::with('panitia', 'disetujuiOleh')->where('periode_id', $periode->id)->latest()->first();
+            $riwayat = Ranking::with('panitia')->where('periode_id', $periode->id)->latest()->get();
         }
 
-        return view('panel.ranking', compact('periode', 'final', 'riwayat', 'kelasList', 'filterKelas'));
+        return view('panel.ranking', compact('periode', 'final', 'riwayat', 'filterJenis'));
     }
 
     public function generateRanking(Request $request)
@@ -187,11 +189,15 @@ class SiswaController extends Controller
             return back()->withErrors(['msg' => "Masih ada {$belumDinilai} prestasi yang belum dinilai. Selesaikan penilaian terlebih dahulu."]);
         }
 
+        SawService::flushCache($periode->id);
         $hasil = (new SawService())->hitung($periode)->map(function ($item) {
             return [
                 'siswa_id' => $item['siswa']->id,
                 'nama' => $item['siswa']->nama,
-                'kelas' => $item['siswa']->kelas,
+                'kelas_id' => $item['kelas_id'],
+                'kelas' => $item['siswa']->kelas?->nama,
+                'kategori_lomba_id' => $item['kategori_lomba_id'],
+                'kategori' => $item['kategori'],
                 'total_vi' => $item['total_vi'],
                 'nilai_akhir' => $item['nilai_akhir'],
                 'detail' => $item['detail'],
@@ -200,11 +206,13 @@ class SiswaController extends Controller
             ];
         })->values()->toArray();
 
-        Ranking::create([
+        $ranking = Ranking::create([
             'periode_id' => $periode->id,
             'panitia_id' => $request->user()->id,
             'hasil' => $hasil,
         ]);
+
+        $this->log('generate_ranking', "Generate ranking periode {$periode->nama} ({$periode->tahun})", $ranking);
 
         return redirect()->route('panel.ranking')->with('status', 'Ranking berhasil di-generate.');
     }
@@ -223,28 +231,71 @@ class SiswaController extends Controller
         return back()->with('status', 'Hasil ranking disetujui oleh Waka Kesiswaan.');
     }
 
+    public function setujuiKategori(Request $request, Ranking $ranking)
+    {
+        $kategoriId = (int) $request->input('kategori_lomba_id');
+        if (! $kategoriId) {
+            return back()->withErrors(['msg' => 'Kategori lomba tidak valid.']);
+        }
+
+        $disetujui = $ranking->disetujui_kelas ?? [];
+        if (in_array($kategoriId, $disetujui)) {
+            return back()->withErrors(['msg' => 'Kategori ini sudah divalidasi.']);
+        }
+
+        $disetujui[] = $kategoriId;
+        $ranking->update(['disetujui_kelas' => $disetujui]);
+
+        $namaKategori = \App\Models\KategoriLomba::find($kategoriId)?->nama ?? $kategoriId;
+
+        $this->log('validasi_kategori', "Validasi kategori {$namaKategori} ranking #{$ranking->id}", $ranking);
+
+        return back()->with('status', "Kategori {$namaKategori} berhasil divalidasi.");
+    }
+
     public function umumkanHasil(Request $request, Ranking $ranking)
     {
         if (! $ranking->disetujui_at) {
-            return back()->withErrors(['msg' => 'Ranking harus disetujui Waka terlebih dahulu.']);
+            $semuaKategoriId = collect($ranking->hasil)->pluck('kategori_lomba_id')->unique()->filter()->values()->toArray();
+            $semuaDiv = $semuaKategoriId && $ranking->disetujui_kelas && empty(array_diff($semuaKategoriId, $ranking->disetujui_kelas));
+            if (! $semuaDiv) {
+                return back()->withErrors(['msg' => 'Ranking harus divalidasi Waka di semua kategori lomba terlebih dahulu.']);
+            }
         }
 
         if ($ranking->diumumkan_at) {
             return back()->withErrors(['msg' => 'Hasil sudah diumumkan.']);
         }
 
-        $daftar = collect($ranking->hasil)
-            ->sortBy('peringkat')
-            ->map(fn ($r) => "{$r['peringkat']}. {$r['nama']} (Kelas {$r['kelas']}) — Nilai Akhir ".number_format($r['nilai_akhir'] ?? $r['total_vi'], 2))
+        $sorted = collect($ranking->hasil)->sortBy([
+            ['kategori', 'asc'],
+            ['peringkat', 'asc'],
+        ]);
+        $daftar = $sorted->map(fn ($r) => "[{$r['kategori']}] {$r['peringkat']}. {$r['nama']} (Kelas ". (is_array($r['kelas']) ? ($r['kelas']['nama'] ?? '?') : $r['kelas']) .") — Nilai Akhir ".number_format($r['nilai_akhir'] ?? $r['total_vi'], 2))
             ->implode("\n");
+
+        $dataRows = $sorted->map(fn ($r) => [
+            'kategori_lomba_id' => isset($r['kategori_lomba_id']) ? (int) $r['kategori_lomba_id'] : null,
+            'kategori' => $r['kategori'] ?? '-',
+            'peringkat' => $r['peringkat'],
+            'nama' => $r['nama'],
+            'kelas' => is_array($r['kelas']) ? ($r['kelas']['nama'] ?? '?') : $r['kelas'],
+            'nilai_akhir' => number_format($r['nilai_akhir'] ?? $r['total_vi'], 2),
+            'total_vi' => $r['total_vi'] ?? null,
+            'jumlah_prestasi' => $r['jumlah_prestasi'] ?? null,
+            'detail' => $r['detail'] ?? [],
+        ])->values()->toArray();
 
         $pengumuman = \App\Models\Pengumuman::create([
             'judul' => 'Pengumuman Hasil SDM Award '.$ranking->periode->nama,
             'tanggal' => now(),
             'isi' => "Berikut adalah siswa berprestasi terpilih:\n\n".$daftar,
+            'data' => $dataRows,
         ]);
 
         $ranking->update(['diumumkan_at' => now()]);
+
+        $this->log('umumkan_hasil', "Umumkan hasil ranking #{$ranking->id} periode {$ranking->periode->nama}", $ranking);
 
         return redirect()->route('panel.ranking')->with('status', 'Hasil seleksi diumumkan.');
     }

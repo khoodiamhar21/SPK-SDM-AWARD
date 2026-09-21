@@ -3,11 +3,11 @@
 namespace Database\Seeders;
 
 use App\Models\Bobot;
+use App\Models\KategoriLomba;
 use App\Models\Kelas;
 use App\Models\Kriteria;
 use App\Models\Periode;
 use App\Models\Prestasi;
-use App\Models\Rubrik;
 use App\Models\Siswa;
 use App\Models\User;
 use Illuminate\Database\Seeder;
@@ -52,8 +52,12 @@ class SpkSeeder extends Seeder
                 );
                 $user = User::firstOrCreate(
                     ['nisn' => $a['nisn']],
-                    ['name' => $a['name'], 'email' => $a['nisn'].'@sdmaward.test', 'password' => Hash::make('password'), 'role' => 'siswa']
+                    ['name' => $a['name'], 'email' => $a['nisn'].'@sdmaward.test', 'password' => Hash::make('password')]
                 );
+                if ($user->role !== 'siswa') {
+                    $user->role = 'siswa';
+                    $user->save();
+                }
                 $siswa->update([
                     'user_id' => $user->id,
                     'waktu_registrasi_pertama' => now(),
@@ -61,10 +65,13 @@ class SpkSeeder extends Seeder
                 ]);
                 $siswaUsers[$a['nisn']] = $user;
             } else {
-                User::firstOrCreate(
+                $user = User::firstOrCreate(
                     ['email' => $a['email']],
-                    ['name' => $a['name'], 'password' => Hash::make('password'), 'role' => $a['role']]
+                    ['name' => $a['name'], 'password' => Hash::make('password')]
                 );
+                if ($user->role !== $a['role']) {
+                    $user->forceFill(['role' => $a['role']])->save();
+                }
             }
         }
 
@@ -83,30 +90,49 @@ class SpkSeeder extends Seeder
         Bobot::firstOrCreate(['kriteria_id' => $c2->id, 'periode_id' => $periode->id], ['bobot' => 0.3]);
         Bobot::firstOrCreate(['kriteria_id' => $c3->id, 'periode_id' => $periode->id], ['bobot' => 0.2]);
 
-        // ===== RUBRIK (dari Panduan Penilaian SDM Award) =====
+        // ===== TINGKAT KEJUARAAN (dinamis, mapping ke kriteria SAW) =====
+        \App\Models\Tingkat::firstOrCreate(
+            ['kode' => 'kabupaten'],
+            ['nama' => 'Kabupaten/Kota', 'kriteria_id' => $c3->id, 'urutan' => 1]
+        );
+        \App\Models\Tingkat::firstOrCreate(
+            ['kode' => 'provinsi'],
+            ['nama' => 'Provinsi', 'kriteria_id' => $c2->id, 'urutan' => 2]
+        );
+        \App\Models\Tingkat::firstOrCreate(
+            ['kode' => 'nasional'],
+            ['nama' => 'Nasional', 'kriteria_id' => $c1->id, 'urutan' => 3]
+        );
+        \App\Models\Tingkat::firstOrCreate(
+            ['kode' => 'internasional'],
+            ['nama' => 'Internasional', 'kriteria_id' => $c1->id, 'urutan' => 4]
+        );
+
+        // ===== KATEGORI LOMBA & RUBRIK (gap skor per cabang) =====
+        $this->call(KategoriLombaSeeder::class);
         $this->call(RubrikSeeder::class);
 
         // ===== DATA PRESTASI CONTOH =====
-        // [siswa, kegiatan, tingkat, peringkat, penyelenggara, jenis, tgl, status]
+        // [siswa, kegiatan, tingkat, peringkat, kategori_lomba, jenis, tgl, status]
         $seed = [
-            [$siswa,  'OSN Matematika',     'nasional',     'juara1', 'pemerintah', 'perorangan', '2025-06-10', 'valid'],
-            [$siswa,  'Festival Seni',       'provinsi',     'juara2', 'pemerintah', 'perorangan', '2025-08-15', 'valid'],
-            [$siswa2, 'Olimpiade Sains',     'nasional',     'juara3', 'pemerintah', 'perorangan', '2025-09-20', 'valid'],
-            [$siswa2, 'Lomba Tahfidz',       'kabupaten',    'juara1', 'pemerintah', 'perorangan', '2025-03-05', 'menunggu'],
-            [$siswa3, 'Lomba Pidato',        'provinsi',     'juara1', 'pemerintah', 'perorangan', '2025-07-12', 'valid'],
-            [$siswa3, 'MTQ Tingkat Kota',    'kabupaten',    'juara2', 'pemerintah', 'perorangan', '2025-04-18', 'valid'],
-            [$siswa4, 'Lomba Melukis',       'nasional',     'juara2', 'swasta',     'perorangan', '2025-10-01', 'valid'],
-            [$siswa4, 'Lomba Menyanyi',      'provinsi',     'juara3', 'swasta',     'perorangan', '2025-05-22', 'menunggu'],
-            [$siswa5, 'Olympiade IPS',       'nasional',     'juara1', 'pemerintah', 'beregu',    '2025-11-03', 'valid'],
-            [$siswa5, 'Lomba Basket',        'kabupaten',    'juara1', 'swasta',     'beregu',    '2025-02-14', 'valid'],
+            [$siswa,  'OSN Matematika',     'nasional',  'juara1', 'OLIMPIADE', 'perorangan', '2025-06-10', 'valid'],
+            [$siswa,  'Festival Seni',       'provinsi',  'juara2', 'SENI',      'perorangan', '2025-08-15', 'valid'],
+            [$siswa2, 'Olimpiade Sains',     'nasional',  'juara3', 'OLIMPIADE', 'perorangan', '2025-09-20', 'valid'],
+            [$siswa2, 'Lomba Tahfidz',       'kabupaten', 'juara1', 'KEISLAMAN', 'perorangan', '2025-03-05', 'menunggu'],
+            [$siswa3, 'Lomba Pidato',        'provinsi',  'juara1', 'LITERASI',  'perorangan', '2025-07-12', 'valid'],
+            [$siswa3, 'MTQ Tingkat Kota',    'kabupaten', 'juara2', 'KEISLAMAN', 'perorangan', '2025-04-18', 'valid'],
+            [$siswa4, 'Lomba Melukis',       'nasional',  'juara2', 'SENI',      'perorangan', '2025-10-01', 'valid'],
+            [$siswa4, 'Lomba Menyanyi',      'provinsi',  'juara3', 'SENI',      'perorangan', '2025-05-22', 'menunggu'],
+            [$siswa5, 'Olimpiade IPS',       'nasional',  'juara1', 'OLIMPIADE', 'beregu',     '2025-11-03', 'valid'],
+            [$siswa5, 'Lomba Basket',        'kabupaten', 'juara1', 'OLAHRAGA',  'beregu',     '2025-02-14', 'valid'],
         ];
 
-        foreach ($seed as [$s, $keg, $tk, $pr, $peny, $jenis, $tgl, $st]) {
+        foreach ($seed as [$s, $keg, $tk, $pr, $katNama, $jenis, $tgl, $st]) {
             $p = Prestasi::firstOrCreate(
                 ['siswa_id' => $s->id, 'nama_kegiatan' => $keg],
                 [
                     'periode_id' => $periode->id, 'tingkat' => $tk, 'peringkat' => $pr,
-                    'penyelenggara' => $peny, 'jenis' => $jenis,
+                    'kategori_lomba_id' => KategoriLomba::where('nama', $katNama)->value('id'), 'jenis' => $jenis,
                     'tanggal' => $tgl, 'status_validasi' => $st,
                 ]
             );

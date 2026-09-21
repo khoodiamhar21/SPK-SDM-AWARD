@@ -2,7 +2,7 @@
     <x-slot name="header">
         <div class="flex items-center justify-between">
             <h2 class="font-semibold text-xl text-slate-800">Kelola Akun</h2>
-            <a href="{{ route('panel.akun.create') }}" class="inline-flex items-center px-4 py-2 bg-blue-600 text-white text-sm rounded-lg hover:bg-blue-700">+ Akun Baru</a>
+            <a href="{{ route('panel.akun.create') }}" class="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-blue-600 text-white text-sm font-medium hover:bg-blue-700"><x-icon name="plus" class="h-4 w-4" /> Akun Baru</a>
         </div>
     </x-slot>
 

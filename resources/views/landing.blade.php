@@ -32,10 +32,8 @@
                 <a href="#prestasi" class="hover:text-blue-700">Siswa Berprestasi</a>
                 <a href="#berita" class="hover:text-blue-700">Berita</a>
                 <a href="#pengumuman" class="hover:text-blue-700">Pengumuman</a>
-                <a href="#tentang" class="hover:text-blue-700">Tentang</a>
             </nav>
             <div class="flex items-center gap-2">
-                <a href="{{ route('register') }}" class="px-4 py-2 rounded-xl border border-blue-200 text-blue-700 text-sm font-semibold hover:bg-blue-50 transition-all">Register</a>
                 <a href="{{ route('login') }}" class="px-4 py-2 rounded-xl bg-blue-600 text-white text-sm font-semibold hover:bg-blue-700 transition-all shadow-sm">Login</a>
             </div>
         </div>
@@ -58,14 +56,15 @@
         <div class="relative max-w-6xl mx-auto px-5 py-24 sm:py-32">
             <div class="pop text-white max-w-2xl">
                 <span class="inline-block px-3 py-1 rounded-full bg-white/15 text-blue-50 text-xs font-bold mb-5 backdrop-blur">SD Muhammadiyah Metro Pusat</span>
-                <h1 class="text-4xl sm:text-5xl lg:text-6xl font-extrabold leading-tight drop-shadow">
-                    Apresiasi <span class="text-sky-300">Siswa Berprestasi</span> Kita
-                </h1>
+                <h1 class="text-5xl sm:text-5xl lg:text-6xl font-extrabold leading-tight drop-shadow">
+    Raih Prestasi<br>
+    Jadi Inspirasi
+</h1>
                 <p class="mt-5 text-blue-50/90 text-lg max-w-lg drop-shadow">
                     SDM Award menyanjung pencapaian terbaik siswa — dari juara kelas hingga prestasi tingkat nasional dan internasional.
                 </p>
                 <div class="mt-8 flex flex-wrap gap-3">
-                    <a href="{{ route('register') }}" class="px-6 py-3 rounded-2xl bg-blue-600 text-white font-semibold hover:bg-blue-700 shadow-md transition-all">Daftar Sekarang</a>
+                    <a href="{{ route('login') }}" class="px-6 py-3 rounded-2xl bg-blue-600 text-white font-semibold hover:bg-blue-700 shadow-md transition-all">Login Siswa</a>
                 </div>
             </div>
         </div>
@@ -96,7 +95,7 @@
                 @forelse($prestasiSiswa as $p)
                     <div class="bg-white rounded-3xl border border-slate-100 p-5 text-center hover:-translate-y-2 hover:shadow-xl transition-all pop">
                         <div class="mx-auto h-24 w-24 rounded-full bg-blue-100 overflow-hidden border-4 border-white shadow mb-3 floaty">
-                            <img src="{{ asset($p['foto']) }}" class="h-full w-full object-cover" alt="">
+                            <img src="{{ asset($p['foto']) }}" loading="lazy" decoding="async" class="h-full w-full object-cover" alt="">
                         </div>
                         <div class="font-bold text-slate-800 leading-tight">{{ $p['nama'] }}</div>
                         <div class="text-[11px] text-blue-600 font-semibold mt-0.5">Kelas {{ $p['kelas'] }}</div>
@@ -123,7 +122,7 @@
                 <div class="bg-white rounded-2xl border border-slate-100 p-5 hover:-translate-y-1 hover:shadow-lg transition-all pop">
                     <div class="flex items-center gap-3 mb-3">
                         <div class="h-12 w-12 rounded-full bg-blue-100 overflow-hidden border-2 border-white shadow shrink-0">
-                            <img src="{{ asset($prestasiSiswa->firstWhere('nama', $pr->siswa->nama)['foto'] ?? 'img/default-avatar.png') }}" class="h-full w-full object-cover" alt="">
+                            <img src="{{ asset(($prestasiSiswa->firstWhere('nama', $pr->siswa->nama)['foto'] ?? null) ?: 'img/default-avatar.png') }}" class="h-full w-full object-cover" alt="">
                         </div>
                         <div class="leading-tight">
                             <div class="font-bold text-slate-800 text-sm">{{ $pr->siswa->nama }}</div>
@@ -155,7 +154,7 @@
                 @forelse($beritas as $b)
                     <article class="bg-white rounded-2xl border border-slate-100 overflow-hidden hover:-translate-y-1 hover:shadow-lg transition-all pop">
                         <div class="h-36 bg-gradient-to-br from-blue-100 to-sky-100 flex items-center justify-center overflow-hidden">
-                            @if($b->foto_path)<img src="{{ asset('storage/'.$b->foto_path) }}" class="h-full w-full object-cover" alt="">@endif
+                            @if($b->foto_path)<img src="{{ asset('storage/'.$b->foto_path) }}" loading="lazy" decoding="async" class="h-full w-full object-cover" alt="">@endif
                         </div>
                         <div class="p-4">
                             <span class="inline-block px-2 py-0.5 rounded-full bg-blue-100 text-blue-700 text-[10px] font-bold mb-2">{{ $b->kategori }}</span>
@@ -174,14 +173,24 @@
     @if($pengumumans->isNotEmpty())
     <section id="pengumuman" class="max-w-6xl mx-auto px-5 py-16">
         <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-900 text-center">Pengumuman</h2>
-        <div class="mt-8 grid sm:grid-cols-2 gap-4">
+        <div class="mt-8 space-y-4">
             @foreach($pengumumans as $p)
-                <div class="bg-amber-50 border border-amber-200 rounded-2xl p-5 pop">
-                    <div class="flex items-center gap-2 text-amber-700 font-semibold text-sm">
-                        <x-icon name="doc" class="h-5 w-5" /> {{ $p->judul }}
+                <div class="bg-white border border-slate-200 rounded-2xl p-5 pop">
+                    <div class="flex items-start justify-between gap-3">
+                        <a href="{{ route('pengumuman.show', $p) }}" class="flex-1 group">
+                            <div class="text-xs text-slate-400">{{ $p->tanggal->format('d M Y') }}</div>
+                            <div class="font-semibold text-slate-800 mt-1 group-hover:text-blue-600 transition-colors">{{ $p->judul }}</div>
+                            @if($p->data)
+                                <div class="text-xs text-blue-500 mt-1">Klik untuk melihat detail &rarr;</div>
+                            @endif
+                        </a>
+                        @if($p->data)
+                            <a href="{{ route('pengumuman.pdf', $p) }}" class="text-sm text-blue-600 hover:underline shrink-0 mt-1">Download PDF</a>
+                        @endif
                     </div>
-                    <p class="text-sm text-slate-600 mt-2">{{ $p->isi }}</p>
-                    <p class="text-[11px] text-slate-400 mt-2">{{ $p->tanggal->format('d M Y') }}</p>
+                    @if(!$p->data)
+                        <p class="text-sm text-slate-600 mt-2 whitespace-pre-line">{{ $p->isi }}</p>
+                    @endif
                 </div>
             @endforeach
         </div>

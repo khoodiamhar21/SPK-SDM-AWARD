@@ -17,15 +17,44 @@
             <div class="text-sm font-semibold">{{ $periodeAktif->nama ?? '-' }}</div>
         </div>
         <div class="bg-gradient-to-br from-blue-600 to-sky-500 rounded-xl shadow-sm p-5 border text-white">
-            <div class="text-sm text-blue-50">Nilai Sementara (SAW)</div>
-            @if($nilaiSementara)
+            @if($nilaiPerolehan)
+                <div class="text-sm text-blue-50">Nilai Perolehan (SAW)</div>
+                <div class="text-2xl font-bold">{{ number_format($nilaiPerolehan['nilai_akhir'], 4) }}</div>
+                <div class="text-[11px] text-blue-50/90 mt-1">Peringkat #{{ $nilaiPerolehan['peringkat'] }} · Kategori {{ $nilaiPerolehan['kategori'] }} · Sudah tervalidasi</div>
+            @elseif($nilaiSementara)
+                <div class="text-sm text-blue-50">Nilai Sementara (SAW)</div>
                 <div class="text-2xl font-bold">{{ number_format($nilaiSementara['total_vi'], 4) }}</div>
                 <div class="text-[11px] text-blue-50/90 mt-1">Peringkat sementara #{{ $nilaiSementara['peringkat'] }} · {{ $nilaiSementara['jumlah_prestasi'] }} prestasi valid</div>
             @else
+                <div class="text-sm text-blue-50">Nilai Sementara (SAW)</div>
                 <div class="text-lg font-semibold opacity-90">Belum ada prestasi valid</div>
             @endif
         </div>
     </div>
+
+    @if($pengumumans->isNotEmpty())
+        <div class="mb-6">
+            <h3 class="font-semibold text-slate-800 mb-3">Pengumuman</h3>
+            <div class="space-y-4">
+                @foreach($pengumumans as $p)
+                    <div class="bg-white rounded-xl shadow-sm border p-4">
+                        <div class="flex items-start justify-between gap-3">
+                            <div class="flex-1">
+                                <div class="text-xs text-slate-400 mb-1">{{ $p->tanggal->format('d M Y') }}</div>
+                                <a href="{{ route('pengumuman.show', $p) }}" class="font-semibold text-slate-800 hover:text-blue-600 transition-colors">{{ $p->judul }}</a>
+                            </div>
+                            @if($p->data)
+                                <a href="{{ route('pengumuman.pdf', $p) }}" class="text-xs text-blue-600 hover:underline shrink-0 ml-4 mt-1">Download PDF</a>
+                            @endif
+                        </div>
+                        @if(!$p->data)
+                            <div class="text-sm text-slate-600 whitespace-pre-line mt-1">{!! nl2br(e($p->isi)) !!}</div>
+                        @endif
+                    </div>
+                @endforeach
+            </div>
+        </div>
+    @endif
 
     <div class="flex justify-between items-center mb-3">
         <h3 class="font-semibold text-slate-800">Prestasi Saya</h3>

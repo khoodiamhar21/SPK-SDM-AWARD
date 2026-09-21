@@ -16,7 +16,7 @@
 
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
-                        <x-input-label for="nisn" value="NISN" />
+                        <x-input-label for="nisn" value="NIS" />
                         <x-text-input id="nisn" name="nisn" :value="old('nisn', $siswa->nisn ?? '')" class="mt-1 block w-full" disabled />
                     </div>
                     <div>

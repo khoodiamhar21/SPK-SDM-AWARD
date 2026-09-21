@@ -2,18 +2,14 @@
     <div class="flex items-center justify-between mb-6">
         <div>
             <h1 class="text-xl font-semibold text-slate-800">Penilaian Prestasi</h1>
-            <p class="text-sm text-slate-500">Ceklis/input nilai rubrik untuk prestasi yang sudah lolos validasi berkas.</p>
+            <p class="text-sm text-slate-500">Nilai otomatis dari rubrik saat prestasi divalidasi validator.</p>
         </div>
     </div>
-
-    @if(session('status'))
-        <div class="mb-4 px-4 py-3 rounded-xl bg-blue-50 text-blue-800 text-sm border border-blue-200">{{ session('status') }}</div>
-    @endif
 
     @if($periode)
         @if($belumDinilai > 0)
             <div class="mb-4 px-4 py-3 rounded-xl bg-amber-50 text-amber-800 text-sm border border-amber-200">
-                Masih ada {{ $belumDinilai }} prestasi yang belum dinilai. Tombol <b>Generate Ranking</b> baru aktif setelah semua prestasi tervalidasi dinilai.
+                Masih ada {{ $belumDinilai }} prestasi belum dinilai (menunggu validasi).
             </div>
         @else
             <div class="mb-4 px-4 py-3 rounded-xl bg-emerald-50 text-emerald-800 text-sm border border-emerald-200">
@@ -26,22 +22,26 @@
                 <table class="w-full text-sm">
                     <thead class="bg-slate-50 text-slate-500">
                         <tr>
+                            <th class="px-5 py-3 text-left">#</th>
                             <th class="px-5 py-3 text-left">Siswa</th>
                             <th class="px-5 py-3 text-left">Kegiatan</th>
                             <th class="px-5 py-3 text-left">Kriteria</th>
-                            <th class="px-5 py-3 text-left">Nilai Rubrik</th>
-                            <th class="px-5 py-3 text-right">Aksi</th>
+                            <th class="px-5 py-3 text-center">Nilai</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y">
-                        @forelse($prestasis as $p)
+                        @forelse($prestasis as $i => $p)
                             <tr class="hover:bg-slate-50">
+                                <td class="px-5 py-3 text-slate-400">{{ ($prestasis->currentPage()-1)*$prestasis->perPage()+$i+1 }}</td>
                                 <td class="px-5 py-3 font-medium">{{ $p->siswa->nama ?? '-' }}</td>
                                 <td class="px-5 py-3">{{ $p->nama_kegiatan }}</td>
-                                <td class="px-5 py-3 text-[11px] capitalize">{{ $p->penyelenggara }} / {{ $p->jenis }}<br>{{ $p->tingkat }} / {{ str_replace('juara','Juara ',$p->peringkat) }}</td>
-                                <td class="px-5 py-3 font-mono font-semibold {{ $p->nilai_rubrik ? 'text-emerald-600' : 'text-amber-600' }}">{{ $p->nilai_rubrik ?? 'Belum dinilai' }}</td>
-                                <td class="px-5 py-3 text-right">
-                                    <a href="{{ route('panel.penilaian.show', $p) }}" class="text-blue-600 hover:underline">Nilai</a>
+                                <td class="px-5 py-3 text-[11px] capitalize">{{ $p->kategoriLomba->nama ?? '-' }} / {{ $p->jenis }}<br>{{ $p->tingkat }} / {{ str_replace('juara','Juara ',$p->peringkat) }}</td>
+                                <td class="px-5 py-3 text-center">
+                                    @if($p->nilai_rubrik)
+                                        <span class="inline-block px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-700 font-mono font-bold text-xs">{{ $p->nilai_rubrik }}</span>
+                                    @else
+                                        <span class="text-slate-400 text-xs">—</span>
+                                    @endif
                                 </td>
                             </tr>
                         @empty

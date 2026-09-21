@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Banner;
 use App\Models\Berita;
 use App\Models\Pengumuman;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
@@ -88,5 +89,58 @@ class ContentController extends Controller
     {
         $pengumuman->delete();
         return back()->with('status', 'Pengumuman dihapus.');
+    }
+
+    private function susunDataPengumuman(Pengumuman $pengumuman, ?string $kategori = null): array
+    {
+        $data = collect($pengumuman->data ?? []);
+
+        $kategoriList = $data->pluck('kategori')->filter()->unique()->sort()->values();
+
+        $rows = $kategori
+            ? $data->filter(fn ($r) => ($r['kategori'] ?? '-') === $kategori)
+            : $data;
+
+        $perKategori = $rows
+            ->groupBy(fn ($r) => $r['kategori'] ?? '-')
+            ->map(fn ($items) => $items->sortBy('peringkat')->values());
+
+        $kriteriaKodes = $data
+            ->pluck('detail')
+            ->filter()
+            ->flatMap(fn ($d) => collect($d)->keys())
+            ->unique()
+            ->sort()
+            ->values();
+
+        return [$perKategori, $kategoriList, $kriteriaKodes, $kategori];
+    }
+
+    public function pengumumanShow(Request $request, Pengumuman $pengumuman)
+    {
+        [$perKategori, $kategoriList, $kriteriaKodes] = $this->susunDataPengumuman(
+            $pengumuman,
+            $request->query('kategori')
+        );
+
+        return view('pengumuman-detail', compact(
+            'pengumuman', 'perKategori', 'kategoriList', 'kriteriaKodes'
+        ));
+    }
+
+    public function pengumumanPdf(Request $request, Pengumuman $pengumuman)
+    {
+        [$perKategori, $kategoriList, $kriteriaKodes, $kategoriAktif] = $this->susunDataPengumuman(
+            $pengumuman,
+            $request->query('kategori')
+        );
+
+        $pdf = Pdf::loadView('panel.pengumuman-pdf', compact(
+            'pengumuman', 'perKategori', 'kategoriList', 'kriteriaKodes', 'kategoriAktif'
+        ));
+
+        $namaFile = 'pengumuman-'.$pengumuman->id.($kategoriAktif ? '-'.\Illuminate\Support\Str::slug($kategoriAktif) : '').'.pdf';
+
+        return $pdf->download($namaFile);
     }
 }
